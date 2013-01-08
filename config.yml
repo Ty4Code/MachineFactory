@@ -13,6 +13,10 @@ general:
   - GOLD_ORE
   - DIAMOND_ORE
   - LAPIS_ORE
+  junk:
+  - STONE
+  - DIRT
+  - GRAVEL
   
 oregin_tier_properties:
 

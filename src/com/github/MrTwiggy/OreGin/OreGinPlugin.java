@@ -84,9 +84,9 @@ public class OreGinPlugin extends JavaPlugin
 		OreGinPlugin.JUNK_DESTRUCTION_ENABLED = getConfig().getBoolean("general.junk_destruction_enabled");
 		
 		//Load valuables
-		List<String> materialStrings = (List<String>) getConfig().getList("general.valuables");
+		List<String> valuablesMaterialStrings = (List<String>) getConfig().getList("general.valuables");
 		VALUABLES = new ArrayList<Material>();
-		for (String string : materialStrings)
+		for (String string : valuablesMaterialStrings)
 		{
 			if (Material.valueOf(string) != null)
 			{
@@ -95,10 +95,15 @@ public class OreGinPlugin extends JavaPlugin
 		}
 		
 		//Load junk
+		List<String> junkMaterialStrings = (List<String>) getConfig().getList("general.junk");
 		JUNK = new ArrayList<Material>();
-		JUNK.add(Material.STONE);
-		JUNK.add(Material.DIRT);
-		JUNK.add(Material.GRAVEL);
+		for (String string : junkMaterialStrings)
+		{
+			if (Material.valueOf(string) != null)
+			{
+				JUNK.add(Material.valueOf(string));
+			}			
+		};
 
 		//Load OreGin tier properties
 		for (int i = 1; i <= OreGinPlugin.MAX_TIERS; i++)
