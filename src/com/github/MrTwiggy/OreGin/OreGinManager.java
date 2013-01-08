@@ -3,6 +3,7 @@ package com.github.MrTwiggy.OreGin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -51,19 +52,24 @@ public class OreGinManager implements Listener
 	}
 	
 	/**
-	 * Attempts to create an OreGin at the location
+	 * Attempts to create an OreGin at the location and returns result message
 	 */
-	public boolean CreateOreGin(Location machineLocation)
+	public String CreateOreGin(Location machineLocation)
 	{
-		//Add logic for attempting to create an OreGin
+		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(1);
+		Material upgradeMaterial = desiredTierProperties.GetUpgradeMaterial();
+		
 		if (!OreGinExistsAt(machineLocation) && OreGin.ValidUpgrade(machineLocation, 1))
 		{
-			oreGins.add(new OreGin(machineLocation));
+			OreGin oreGin = new OreGin(machineLocation);
+			oreGins.add(oreGin);
+			oreGin.RemoveUpgradeMaterial(1);
 			plugin.getLogger().info("New OreGin created!");
-			return true;
+			return ChatColor.GREEN + "Successfully created OreGin!";
 		}
-			
-		return false;
+
+		return ChatColor.RED + "Missing creation materials! " + OreGin.RequiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
+				upgradeMaterial, machineLocation);	
 	}
 	
 	/**

@@ -17,6 +17,7 @@ general:
   - STONE
   - DIRT
   - GRAVEL
+  - SAND
   
 oregin_tier_properties:
 

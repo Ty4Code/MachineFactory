@@ -50,48 +50,33 @@ public class OreGinListener implements Listener
 			if (clicked.getState() instanceof Dispenser)
 			{
 				//Create and/or upgrade OreGin
-				if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_UPGRADE_WAND) && event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_UPGRADE_WAND))
 				{
-					if (oreGinMan.CreateOreGin(clicked.getLocation()))
-					{
-						creator.sendMessage(ChatColor.GREEN + "Success! OreGin has been created!");
-					}
-					else if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
+					
+					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
 					{
 						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
-						
-						if (oreGin.Upgrade())
-							creator.sendMessage(ChatColor.YELLOW + "OreGin upgraded to tier " + oreGin.GetTierLevel() + "!");
-						else
-							creator.sendMessage(ChatColor.RED + "Unable to upgrade OreGin!");
+						creator.sendMessage(oreGin.Upgrade());
 					}
 					else
 					{
-						creator.sendMessage(ChatColor.RED + "Unable to create OreGin!");
+						creator.sendMessage(oreGinMan.CreateOreGin(clicked.getLocation()));
 					}
 				} //Activate or de-activate OreGin
-				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_ACTIVATION_WAND) && event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_ACTIVATION_WAND))
 				{
 					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
 					{
 						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
-						
-						if (oreGin.TogglePower())
-							creator.sendMessage(ChatColor.GREEN + "OreGin activated!");
-						else
-							creator.sendMessage(ChatColor.RED + "OreGin deactived!");
+						creator.sendMessage(oreGin.TogglePower());
 					}
 				} //Repair OreGin
-				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_REPAIR_WAND) && event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_REPAIR_WAND))
 				{
 					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
 					{
 						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
-						
-						if (oreGin.Repair())
-							creator.sendMessage(ChatColor.GREEN + "OreGin successfully repaired!");
-						else
-							creator.sendMessage(ChatColor.RED + "Unable to repair OreGin!");
+						creator.sendMessage(oreGin.Repair());
 					}
 				}
 			}

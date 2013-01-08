@@ -381,17 +381,17 @@ public class OreGin
 	/**
 	 * Toggles the OreGin
 	 */
-	public boolean TogglePower()
+	public String TogglePower()
 	{
 		if (!mining && FuelAvailable())
 		{
 			PowerOnOreGin();
-			return true;
+			return ChatColor.GREEN + "OreGin activated!";
 		}
 		else
 		{
 			PowerOffOreGin();
-			return false;
+			return ChatColor.RED + "OreGin deactivated!";
 		}
 		
 	}
@@ -403,27 +403,30 @@ public class OreGin
 	/**
 	 * Attempt to upgrade OreGin
 	 */
-	public boolean Upgrade()
+	public String Upgrade()
 	{
 		//Add logic to determine whether upgrading the machine is possible
 		int desiredTier = tierLevel + 1;
+		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(desiredTier);
 		if (desiredTier <= OreGinPlugin.MAX_TIERS)
 		{
+			Material upgradeMaterial = desiredTierProperties.GetUpgradeMaterial();
 			if (UpgradeMaterialAvailable(desiredTier))
 			{
 				RemoveUpgradeMaterial(desiredTier);
 				tierLevel++;
 				UpdateOreGinProperties();
-				return true;
+				return ChatColor.GREEN + "OreGin successfully upgraded to tier " + tierLevel + "!";
 			}
 			else
 			{
-				return false;
+				return ChatColor.RED + "Missing upgrade materials! " + RequiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
+						upgradeMaterial);	
 			}
 		}
 		else
 		{
-			return false;
+			return ChatColor.RED + "OreGin is already max tier level!";
 		}
 	}
 	
@@ -461,7 +464,7 @@ public class OreGin
 	/**
 	 * Attempts to repair
 	 */
-	public boolean Repair()
+	public String Repair()
 	{
 		if (broken)
 		{
@@ -470,16 +473,17 @@ public class OreGin
 				RemoveRepairMaterials();
 				broken = false;
 				blockBreaks = 0;
-				return true;
+				return ChatColor.GREEN + "OreGin has been successfully repaired!";
 			}
 			else
 			{
-				return false;
+				return ChatColor.RED + "Missing repair materials! " + RequiredAvailableMaterials(oreGinProperties.GetRepairAmount(),
+																		oreGinProperties.GetRepairMaterial());
 			}
 		}
 		else
 		{
-			return false;
+			return ChatColor.RED + "The OreGin is not broken!";
 		}
 	}
 	
@@ -581,7 +585,24 @@ public class OreGin
 	}
 	
 	/**
-	 * Adds a specific material to dispenser and returns left overs
+	 * Returns how much of a specified material is available in dispenser inventory
+	 */
+	public int MaterialAvailableAmount(Material material)
+	{
+		return MaterialAvailableAmount(material, this.oreGinLocation);
+	}
+	
+	/**
+	 * Returns the "Required: (X MATERIAL) Available: (Y MATERIAL)" message
+	 */
+	public String RequiredAvailableMaterials(int amount, Material material)
+	{
+		return "Required: (" + amount + " " + material.toString() + ") Available: ("
+				+ OreGin.MaterialAvailableAmount(material, oreGinLocation) + " " + material.toString() + ")";
+	}
+	
+	/**
+     * Adds a specific material to dispenser and returns left overs
 	 */
 	public HashMap<Integer,ItemStack> AddMaterial(ItemStack item)
 	{
@@ -681,7 +702,7 @@ public class OreGin
 				
 				if(entry.getValue().getAmount() >= materialsToRemove)
 				{
-					dispenserInventory.setItem(entry.getKey(), new ItemStack(entry.getValue().getType(), entry.getValue().getAmount() - materialsToRemove));
+					dispenserInventory.setItem(entry.getKey(), new ItemStack(entry.getValue().getType(), (entry.getValue().getAmount() - materialsToRemove)));
 					materialsToRemove = 0;
 				}
 				else
@@ -723,6 +744,41 @@ public class OreGin
 		else
 		{
 			return false;
+		}
+	}
+	
+	/**
+	 * Returns the "Required: (X MATERIAL) Available: (Y MATERIAL)" message
+	 */
+	public static String RequiredAvailableMaterials(int amount, Material material, Location machineLocation)
+	{
+		return "Required: (" + amount + " " + material.toString() + ") Available: ("
+				+ OreGin.MaterialAvailableAmount(material, machineLocation) + " " + material.toString() + ")";
+	}
+	
+	/**
+	 * Returns how much of a specified material is available in dispenser
+	 */
+	public static int MaterialAvailableAmount(Material material, Location machineLocation)
+	{
+		if (machineLocation.getBlock().getType() == Material.DISPENSER)
+		{
+			Dispenser dispenserBlock = (Dispenser)((BlockState)machineLocation.getBlock().getState());
+			Inventory dispenserInventory = dispenserBlock.getInventory();
+			
+			HashMap<Integer,? extends ItemStack> upgradeMaterials = dispenserInventory.all(material);
+			
+			int totalMaterial = 0;
+			for(Entry<Integer,? extends ItemStack> entry : upgradeMaterials.entrySet())
+			{
+				totalMaterial += entry.getValue().getAmount();
+			}
+			
+			return totalMaterial;
+		}
+		else
+		{
+			return 0;
 		}
 	}
 	
