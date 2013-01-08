@@ -115,7 +115,7 @@ public class OreGinManager implements Listener
 		if (item.getItemMeta().getDisplayName() == null)
 			return false;
 		
-		for(int i = 0; i < OreGinPlugin.MAX_TIERS; i++)
+		for(int i = 1; i <= OreGinPlugin.MAX_TIERS; i++)
 		{
 			if (item.getItemMeta().getDisplayName().equalsIgnoreCase("T" + i + " OreGin"))
 			{
