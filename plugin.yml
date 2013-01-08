@@ -1,3 +1,4 @@
 name: OreGin
-main: com.github.MrTwiggy.OreGin.OreGin
+main: com.github.MrTwiggy.OreGin.OreGinPlugin
+author: MrTwiggy
 version: 0.1

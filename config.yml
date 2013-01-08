@@ -1,0 +1,101 @@
+general:
+  update_cycle: 5
+  max_tiers: 6
+  oregin_upgrade_wand: YELLOW_FLOWER
+  oregin_activation_wand: GRAVEL
+  oregin_repair_wand: RED_ROSE
+  repairing_enabled: true
+  lava_mining_enabled: true
+  water_mining_enabled: true
+  junk_destruction_enabled: true
+  valuables:
+  - IRON_ORE
+  - GOLD_ORE
+  - DIAMOND_ORE
+  - LAPIS_ORE
+  
+oregin_tier_properties:
+
+  tier1:
+    max_mining_distance: 500
+    max_block_breaks: 1000000
+    mining_delay: 5
+    retrieve_valuables: false
+    fuel_type: REDSTONE
+    fuel_amount: 1
+    upgrade_material: IRON_BLOCK
+    upgrade_amount: 4
+    repair_material: IRON_BLOCK
+    repair_amount: 10
+    shaft_width: 9
+    shaft_height: 9
+    
+  tier2:
+    max_mining_distance: 15
+    max_block_breaks: 150
+    mining_delay: 20
+    retrieve_valuables: true
+    fuel_type: REDSTONE
+    fuel_amount: 1
+    upgrade_material: IRON_BLOCK
+    upgrade_amount: 15
+    repair_material: IRON_BLOCK
+    repair_amount: 10
+    shaft_width: 1
+    shaft_height: 2
+    
+  tier3:
+    max_mining_distance: 20
+    max_block_breaks: 300
+    mining_delay: 15
+    retrieve_valuables: false
+    fuel_type: REDSTONE
+    fuel_amount: 2
+    upgrade_material: IRON_BLOCK
+    upgrade_amount: 64
+    repair_material: IRON_BLOCK
+    repair_amount: 10
+    shaft_width: 2
+    shaft_height: 2
+    
+  tier4:
+    max_mining_distance: 50
+    max_block_breaks: 1000
+    mining_delay: 10
+    retrieve_valuables: false
+    fuel_type: REDSTONE
+    fuel_amount: 3
+    upgrade_material: GOLD_BLOCK
+    upgrade_amount: 64
+    repair_material: IRON_BLOCK
+    repair_amount: 10
+    shaft_width: 3
+    shaft_height: 3
+    
+  tier5:
+    max_mining_distance: 100
+    max_block_breaks: 500
+    mining_delay: 5
+    retrieve_valuables: false
+    fuel_type: REDSTONE
+    fuel_amount: 3
+    upgrade_material: DIAMOND_BLOCK
+    upgrade_amount: 10
+    repair_material: IRON_BLOCK
+    repair_amount: 10
+    shaft_width: 5
+    shaft_height: 5
+    
+  tier6:
+    max_mining_distance: 10
+    max_block_breaks: 100
+    mining_delay: 20
+    retrieve_valuables: false
+    fuel_type: REDSTONE
+    fuel_amount: 3
+    upgrade_material: IRON_BLOCK
+    upgrade_amount: 10
+    repair_material: IRON_BLOCK
+    repair_amount: 10
+    shaft_width: 1
+    shaft_height: 1

@@ -1,0 +1,202 @@
+package com.github.MrTwiggy.OreGin;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Dispenser;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+
+/**
+ * OreGinListener.java
+ * Purpose: Listens for OreGin related events and interactions
+ *
+ * @author MrTwiggy
+ * @version 0.1 1/08/13
+ */
+public class OreGinListener implements Listener
+{
+	
+	OreGinManager oreGinMan; //The OreGinManager object
+	
+	/**
+	 * Constructor
+	 */
+	public OreGinListener(OreGinManager oreGinMan)
+	{
+		this.oreGinMan = oreGinMan;
+	}
+	
+	/**
+	 * Checks to see if an OreGin can be created
+	 */
+	@EventHandler
+	public void OreGinInteraction(PlayerInteractEvent event)
+	{
+		Block clicked = event.getClickedBlock();
+		Player creator = event.getPlayer();
+		
+		if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+		{
+			if (clicked.getState() instanceof Dispenser)
+			{
+				//Create and/or upgrade OreGin
+				if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_UPGRADE_WAND) && event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				{
+					if (oreGinMan.CreateOreGin(clicked.getLocation()))
+					{
+						creator.sendMessage(ChatColor.GREEN + "Success! OreGin has been created!");
+					}
+					else if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
+					{
+						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
+						
+						if (oreGin.Upgrade())
+							creator.sendMessage(ChatColor.YELLOW + "OreGin upgraded to tier " + oreGin.GetTierLevel() + "!");
+						else
+							creator.sendMessage(ChatColor.RED + "Unable to upgrade OreGin!");
+					}
+					else
+					{
+						creator.sendMessage(ChatColor.RED + "Unable to create OreGin!");
+					}
+				} //Activate or de-activate OreGin
+				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_ACTIVATION_WAND) && event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				{
+					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
+					{
+						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
+						
+						if (oreGin.TogglePower())
+							creator.sendMessage(ChatColor.GREEN + "OreGin activated!");
+						else
+							creator.sendMessage(ChatColor.RED + "OreGin deactived!");
+					}
+				} //Repair OreGin
+				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_REPAIR_WAND) && event.getAction().equals(Action.LEFT_CLICK_BLOCK))
+				{
+					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
+					{
+						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
+						
+						if (oreGin.Repair())
+							creator.sendMessage(ChatColor.GREEN + "OreGin successfully repaired!");
+						else
+							creator.sendMessage(ChatColor.RED + "Unable to repair OreGin!");
+					}
+				}
+			}
+		}
+		
+
+	}
+	
+	/**
+	 * Checks to see if an OreGin is being destroyed (block broken)
+	 */
+	@EventHandler
+	public void OreGinBroken(BlockBreakEvent event)
+	{
+		Block destroyed = event.getBlock();
+		
+		if (destroyed.getState() instanceof Dispenser)
+		{
+			if (oreGinMan.OreGinExistsAt(destroyed.getLocation()))
+			{
+				OreGin oreGin = oreGinMan.GetOreGin(destroyed.getLocation());
+				event.setCancelled(true);
+				destroyed.setType(Material.AIR);
+				ItemStack dropItem = new ItemStack(Material.DISPENSER, 1);
+				oreGin.DestroyOreGin(dropItem);
+				oreGinMan.oreGins.remove(oreGin);
+			}
+		}
+	}
+	
+	/**
+	 * Checks to see if an OreGin light is being destroyed (block broken)
+	 */
+	@EventHandler
+	public void OreGinLightBroken(BlockBreakEvent event)
+	{
+		Block destroyed = event.getBlock();
+			
+		if (oreGinMan.OreGinLightExistsAt(destroyed.getLocation()))
+		{
+			event.setCancelled(true);
+		}
+	}
+	
+	/**
+	 * Checks to see if an OreGin has been placed
+	 */
+	@EventHandler
+	public void OreGinPlaced(BlockPlaceEvent event)
+	{
+		Block placed = event.getBlock();
+		
+		if (oreGinMan.IsOreGin(event.getItemInHand()))
+		{
+			OreGin oreGin = new OreGin(placed.getLocation(), OreGin.GetTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
+					OreGin.GetBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()));
+			oreGinMan.oreGins.add(oreGin);
+			event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.GetTierLevel() + " was placed!");
+		}
+	}
+
+	/**
+	 * Helps with organizing inventory
+	 */
+	@EventHandler 
+	public void MovedOreGin(InventoryClickEvent event)
+	{
+		ItemStack cursorItem = event.getCursor();
+		ItemStack slotItem = event.getCurrentItem();
+		
+		if (cursorItem.getType() == Material.DISPENSER)
+		{
+			if (slotItem.getType() == Material.DISPENSER)
+			{
+				if (oreGinMan.IsOreGin(cursorItem) || oreGinMan.IsOreGin(slotItem))
+				{
+					if ((cursorItem.getItemMeta().getDisplayName() != slotItem.getItemMeta().getDisplayName())
+							|| cursorItem.getItemMeta().getLore() != slotItem.getItemMeta().getLore())
+					{
+						event.setCursor(slotItem);
+						event.setCurrentItem(cursorItem);
+						event.setCancelled(true);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Maintains the OreGin lights stable
+	 */
+	@EventHandler
+	public void KeepLightsStable(BlockRedstoneEvent event)
+	{
+		if (event.getBlock().getType().equals(OreGinPlugin.LIGHT_ON) || event.getBlock().getType().equals(OreGinPlugin.LIGHT_OFF))
+		{
+			if (oreGinMan.OreGinLightExistsAt(event.getBlock().getLocation()))
+			{
+				if (oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).GetMining())
+				{
+					event.setNewCurrent(5);
+				}
+			}	
+		}						
+	}
+
+
+}
