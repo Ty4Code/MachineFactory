@@ -65,6 +65,7 @@ public class OreGin
 	{
 		SetDefaultValues();
 		this.oreGinLocation = oreGinLocation;
+		OreGinSoundCollection.CreationSound().playSound(oreGinLocation);
 		UpdateOreGinProperties();
 	}
 	
@@ -77,6 +78,7 @@ public class OreGin
 		this.blockBreaks = blockBreaks;
 		this.tierLevel = tierLevel;
 		this.oreGinLocation = oreGinLocation;
+		OreGinSoundCollection.PlacementSound().playSound(oreGinLocation);
 		UpdateOreGinProperties();
 	}
 	
@@ -116,6 +118,7 @@ public class OreGin
 		else //OreGin is broken
 		{
 			ToggleLight();
+			OreGinSoundCollection.BrokenSound().playSound(oreGinLocation);
 		}
 
 	}
@@ -150,6 +153,7 @@ public class OreGin
 		{
 			oreGinLocation.getBlock().getRelative(BlockFace.UP,1).setType(Material.AIR);
 		}
+		OreGinSoundCollection.DestructionSound().playSound(oreGinLocation);
 	}
 	
 	/**
@@ -240,6 +244,7 @@ public class OreGin
 				if (RemoveFuel())
 				{
 					miningDistance++;
+					OreGinSoundCollection.MiningSound().playSound(oreGinLocation);
 				}
 			}
 			else
@@ -366,6 +371,7 @@ public class OreGin
 		miningTimer = 0;
 		mining = false;
 		TurnOffLight();
+		OreGinSoundCollection.PowerOffSound().playSound(oreGinLocation);
 	}
 	
 	/**
@@ -376,6 +382,7 @@ public class OreGin
 		mining = true;
 		miningTimer = 0;
 		TurnOnLight();
+		OreGinSoundCollection.PowerOnSound().playSound(oreGinLocation);
 	}
 	
 	/**
@@ -416,6 +423,7 @@ public class OreGin
 				RemoveUpgradeMaterial(desiredTier);
 				tierLevel++;
 				UpdateOreGinProperties();
+				OreGinSoundCollection.UpgradeSound().playSound(oreGinLocation);
 				return ChatColor.GREEN + "OreGin successfully upgraded to tier " + tierLevel + "!";
 			}
 			else
