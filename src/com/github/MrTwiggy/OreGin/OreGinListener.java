@@ -131,10 +131,20 @@ public class OreGinListener implements Listener
 		
 		if (oreGinMan.IsOreGin(event.getItemInHand()))
 		{
-			OreGin oreGin = new OreGin(placed.getLocation(), OreGin.GetTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
-					OreGin.GetBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()));
-			oreGinMan.oreGins.add(oreGin);
-			event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.GetTierLevel() + " was placed!");
+			if (OreGin.ValidOreGinCreationLocation(placed.getLocation()))
+			{
+				OreGin oreGin = new OreGin(placed.getLocation(), OreGin.GetTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
+						OreGin.GetBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()));
+				oreGinMan.AddOreGin(oreGin);
+				event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.GetTierLevel() + " was placed!");
+			}
+			else
+			{
+				OreGinSoundCollection.ErrorSound().playSound(placed.getLocation());
+				event.getPlayer().sendMessage(ChatColor.RED + "Space above OreGin must be empty!");
+				event.setCancelled(true);
+			}
+			
 		}
 	}
 

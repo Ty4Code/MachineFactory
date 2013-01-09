@@ -59,23 +59,34 @@ public class OreGinManager implements Listener
 		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(1);
 		Material upgradeMaterial = desiredTierProperties.GetUpgradeMaterial();
 		
-		if (!OreGinExistsAt(machineLocation) && OreGin.ValidUpgrade(machineLocation, 1))
+		if (OreGin.ValidOreGinCreationLocation(machineLocation))
 		{
-			OreGin oreGin = new OreGin(machineLocation);
-			oreGins.add(oreGin);
-			oreGin.RemoveUpgradeMaterial(1);
-			plugin.getLogger().info("New OreGin created!");
-			return ChatColor.GREEN + "Successfully created OreGin!";
+			if (!OreGinExistsAt(machineLocation) && OreGin.ValidUpgrade(machineLocation, 1))
+			{
+				OreGin oreGin = new OreGin(machineLocation);
+				AddOreGin(oreGin);
+				oreGin.RemoveUpgradeMaterial(1);
+				plugin.getLogger().info("New OreGin created!");
+				return ChatColor.GREEN + "Successfully created OreGin!";
+			}
+			else
+			{
+				OreGinSoundCollection.ErrorSound().playSound(machineLocation);
+				return ChatColor.RED + "Missing creation materials! " + OreGin.RequiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
+						upgradeMaterial, machineLocation);	
+			}
 		}
-
-		return ChatColor.RED + "Missing creation materials! " + OreGin.RequiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
-				upgradeMaterial, machineLocation);	
+		else
+		{
+			OreGinSoundCollection.ErrorSound().playSound(machineLocation);
+			return ChatColor.RED + "Space above OreGin must be empty!";
+		}
 	}
 	
 	/**
 	 * Attempts to create an OreGin of given OreGin data
 	 */
-	public boolean CreateOreGin(OreGin oreGin)
+	public boolean AddOreGin(OreGin oreGin)
 	{
 		if(oreGin.GetLocation().getBlock().getType().equals(Material.DISPENSER) && !OreGinExistsAt(oreGin.GetLocation()))
 		{

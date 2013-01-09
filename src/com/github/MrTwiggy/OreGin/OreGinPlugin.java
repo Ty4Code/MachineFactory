@@ -154,7 +154,7 @@ public class OreGinPlugin extends JavaPlugin
 		{
 			for (OreGinSave oreGinSave : oreGinSaves)
 			{
-				oreGinMan.CreateOreGin(oreGinSave.ReturnSave(this));
+				oreGinMan.AddOreGin(oreGinSave.ReturnSave(this));
 			}
 			getLogger().info(PLUGIN_PREFIX + "Successfully loaded " + oreGinSaves.size() + " OreGins!");
 		}

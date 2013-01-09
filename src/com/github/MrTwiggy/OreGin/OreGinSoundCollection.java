@@ -119,4 +119,25 @@ public class OreGinSoundCollection
 		return new OreGinSound(soundNames);
 	}
 
+	/**
+	 * Repair Sound
+	 */
+	public static OreGinSound RepairSound()
+	{
+		List<String> soundNames = new ArrayList<String>();
+		soundNames.add("random.eat1");
+		
+		return new OreGinSound(soundNames);
+	}
+	
+	/**
+	 * Error Sound
+	 */
+	public static OreGinSound ErrorSound()
+	{
+		List<String> soundNames = new ArrayList<String>();
+		soundNames.add("random.anvil_land");
+		
+		return new OreGinSound(soundNames);
+	}
 }

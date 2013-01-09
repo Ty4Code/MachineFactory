@@ -428,12 +428,14 @@ public class OreGin
 			}
 			else
 			{
+				OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
 				return ChatColor.RED + "Missing upgrade materials! " + RequiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
 						upgradeMaterial);	
 			}
 		}
 		else
 		{
+			OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
 			return ChatColor.RED + "OreGin is already max tier level!";
 		}
 	}
@@ -481,16 +483,19 @@ public class OreGin
 				RemoveRepairMaterials();
 				broken = false;
 				blockBreaks = 0;
+				OreGinSoundCollection.RepairSound().playSound(oreGinLocation);
 				return ChatColor.GREEN + "OreGin has been successfully repaired!";
 			}
 			else
 			{
+				OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
 				return ChatColor.RED + "Missing repair materials! " + RequiredAvailableMaterials(oreGinProperties.GetRepairAmount(),
 																		oreGinProperties.GetRepairMaterial());
 			}
 		}
 		else
 		{
+			OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
 			return ChatColor.RED + "The OreGin is not broken!";
 		}
 	}
@@ -796,6 +801,14 @@ public class OreGin
 	public static boolean ValidUpgrade(Location machineLocation, int desiredTier)
 	{
 		return (desiredTier <= OreGinPlugin.MAX_TIERS) && UpgradeMaterialAvailable(desiredTier, machineLocation);
+	}
+	
+	/**
+	 * Returns whether location is suitable for creating/placing an OreGin
+	 */
+	public static boolean ValidOreGinCreationLocation(Location machineLocation)
+	{
+		return (machineLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR));
 	}
 	
 	/**
