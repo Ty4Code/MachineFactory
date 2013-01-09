@@ -88,7 +88,7 @@ public class OreGinSoundCollection
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.break");
 		soundNames.add("random.click");
-		soundNames.add("tile.piston.in");
+		soundNames.add("tile.piston.out");
 		soundNames.add("mob.wolf.shake");
 		
 		return new OreGinSound(soundNames);

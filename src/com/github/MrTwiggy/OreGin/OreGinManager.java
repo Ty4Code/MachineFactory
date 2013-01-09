@@ -1,13 +1,21 @@
 package com.github.MrTwiggy.OreGin;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -18,7 +26,7 @@ import org.bukkit.inventory.ItemStack;
  * @author MrTwiggy
  * @version 0.1 1/08/13
  */
-public class OreGinManager implements Listener
+public class OreGinManager implements ManagerInterface
 {
 	
 	List<OreGin> oreGins; //List of current OreGins
@@ -38,6 +46,74 @@ public class OreGinManager implements Listener
 		        UpdateOreGins();
 		    }
 		}, 0L, OreGinPlugin.UPDATE_CYCLE);
+	}
+	
+	/**
+	 * Load OreGins from file
+	 */
+	public void load(File file) throws IOException 
+	{
+		FileInputStream fileInputStream = new FileInputStream(file);
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+
+		String line;
+		while ((line = bufferedReader.readLine()) != null) 
+		{
+			String parts[] = line.split(" ");
+			//ORDER world loc_x loc_y loc_z tier_level block_breaks mining_distance mining broken
+			
+			Location oreGinLocation = new Location(Bukkit.getWorld(parts[0]), Integer.parseInt(parts[1]),
+								Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));	
+			int tierLevel = Integer.parseInt(parts[4]);
+			int blockBreaks = Integer.parseInt(parts[5]);
+			int miningDistance = Integer.parseInt(parts[6]);
+			boolean mining = Boolean.parseBoolean(parts[7]);
+			boolean broken = Boolean.parseBoolean(parts[8]);
+			
+			OreGin oreGin = new OreGin(blockBreaks, tierLevel, mining, broken, miningDistance, oreGinLocation, this);
+			AddOreGin(oreGin);
+		}
+
+		Bukkit.getLogger().info("Successfully loaded " + oreGins.size() + " Ore Gins!");
+		fileInputStream.close();
+	}
+
+	/**
+	 * Save OreGins to file
+	 */
+	public void save(File file) throws IOException {
+		FileOutputStream fileOutputStream = new FileOutputStream(file);
+		BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream));
+		
+		for (OreGin oreGin : oreGins) 
+		{
+			//ORDER world loc_x loc_y loc_z tier_level block_breaks mining_distance mining broken
+			Location location = oreGin.GetLocation();
+			bufferedWriter.append(location.getWorld().getName());
+			bufferedWriter.append(" ");
+			bufferedWriter.append(Integer.toString(location.getBlockX()));
+			bufferedWriter.append(" ");
+			bufferedWriter.append(Integer.toString(location.getBlockY()));
+			bufferedWriter.append(" ");
+			bufferedWriter.append(Integer.toString(location.getBlockZ()));
+            bufferedWriter.append(" ");
+            bufferedWriter.append(Integer.toString(oreGin.GetTierLevel()));
+            bufferedWriter.append(" ");
+            bufferedWriter.append(Integer.toString(oreGin.GetBlockBreaks()));
+            bufferedWriter.append(" ");
+            bufferedWriter.append(Integer.toString(oreGin.GetMiningDistance()));
+            bufferedWriter.append(" ");
+            bufferedWriter.append(Boolean.toString(oreGin.GetMining()));
+            bufferedWriter.append(" ");
+            bufferedWriter.append(Boolean.toString(oreGin.GetBroken()));
+            bufferedWriter.append("\n");
+            
+        }
+		
+		Bukkit.getLogger().info("Successfully saved " + oreGins.size() + " Ore Gins!");
+
+		bufferedWriter.flush();
+		fileOutputStream.close();
 	}
 	
 	/**
@@ -63,7 +139,7 @@ public class OreGinManager implements Listener
 		{
 			if (!OreGinExistsAt(machineLocation) && OreGin.ValidUpgrade(machineLocation, 1))
 			{
-				OreGin oreGin = new OreGin(machineLocation);
+				OreGin oreGin = new OreGin(machineLocation, this);
 				AddOreGin(oreGin);
 				oreGin.RemoveUpgradeMaterial(1);
 				plugin.getLogger().info("New OreGin created!");
@@ -91,7 +167,6 @@ public class OreGinManager implements Listener
 		if(oreGin.GetLocation().getBlock().getType().equals(Material.DISPENSER) && !OreGinExistsAt(oreGin.GetLocation()))
 		{
 			oreGins.add(oreGin);
-			plugin.getLogger().info("New OreGin created!");
 			return true;
 		}
 		else

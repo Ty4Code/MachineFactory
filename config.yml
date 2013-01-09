@@ -1,9 +1,13 @@
 general:
   update_cycle: 5
+  save_cycle: 10
   max_tiers: 7
   oregin_upgrade_wand: YELLOW_FLOWER
   oregin_activation_wand: GRAVEL
   oregin_repair_wand: RED_ROSE
+  oregin_light_on: REDSTONE_LAMP_ON
+  oregin_light_off: REDSTONE_LAMP_OFF
+  redstone_activation_enabled: true
   repairing_enabled: true
   lava_mining_enabled: true
   water_mining_enabled: true
@@ -18,6 +22,10 @@ general:
   - DIRT
   - GRAVEL
   - SAND
+  - GRASS
+  indestructible:
+  - BEDROCK
+  - OBSIDIAN
   
 oregin_tier_properties:
 

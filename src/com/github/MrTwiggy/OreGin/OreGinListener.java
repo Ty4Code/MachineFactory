@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -134,7 +135,7 @@ public class OreGinListener implements Listener
 			if (OreGin.ValidOreGinCreationLocation(placed.getLocation()))
 			{
 				OreGin oreGin = new OreGin(placed.getLocation(), OreGin.GetTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
-						OreGin.GetBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()));
+						OreGin.GetBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()), oreGinMan);
 				oreGinMan.AddOreGin(oreGin);
 				event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.GetTierLevel() + " was placed!");
 			}
@@ -187,10 +188,23 @@ public class OreGinListener implements Listener
 			{
 				if (oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).GetMining())
 				{
-					event.setNewCurrent(5);
+					event.setNewCurrent(1);
+				}
+				else if (!oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).GetBroken())
+				{
+					event.setNewCurrent(0);
 				}
 			}	
 		}						
+	}
+	
+	/**
+	 * Stops OreGins from dispensing fuel or materials
+	 */
+	@EventHandler
+	public void OreGinDispense(BlockDispenseEvent event)
+	{
+		event.setCancelled(oreGinMan.OreGinExistsAt(event.getBlock().getLocation()));
 	}
 
 
