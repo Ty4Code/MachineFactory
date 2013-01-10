@@ -1,5 +1,7 @@
 package com.github.MrTwiggy.OreGin;
 
+import static com.untamedears.citadel.Utility.isReinforced;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -57,7 +59,7 @@ public class OreGinListener implements Listener
 					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
 					{
 						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
-						creator.sendMessage(oreGin.Upgrade());
+						creator.sendMessage(oreGin.upgrade());
 					}
 					else
 					{
@@ -69,7 +71,7 @@ public class OreGinListener implements Listener
 					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
 					{
 						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
-						creator.sendMessage(oreGin.TogglePower());
+						creator.sendMessage(oreGin.togglePower());
 					}
 				} //Repair OreGin
 				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_REPAIR_WAND))
@@ -77,7 +79,7 @@ public class OreGinListener implements Listener
 					if (oreGinMan.OreGinExistsAt(clicked.getLocation()))
 					{
 						OreGin oreGin = oreGinMan.GetOreGin(clicked.getLocation());
-						creator.sendMessage(oreGin.Repair());
+						creator.sendMessage(oreGin.repair());
 					}
 				}
 			}
@@ -87,38 +89,36 @@ public class OreGinListener implements Listener
 	}
 	
 	/**
-	 * Checks to see if an OreGin is being destroyed (block broken)
+	 * Checks to see if an OreGin (dispenser or light) is being destroyed (block broken)
 	 */
 	@EventHandler
 	public void OreGinBroken(BlockBreakEvent event)
 	{
 		Block destroyed = event.getBlock();
 		
-		if (destroyed.getState() instanceof Dispenser)
+		if ((destroyed.getState() instanceof Dispenser) || destroyed.getType().equals(OreGinPlugin.LIGHT_ON)
+				|| destroyed.getType().equals(OreGinPlugin.LIGHT_OFF))
 		{
-			if (oreGinMan.OreGinExistsAt(destroyed.getLocation()))
+			if (oreGinMan.OreGinExistsAt(destroyed.getLocation()) || oreGinMan.OreGinLightExistsAt(destroyed.getLocation()))
 			{
 				OreGin oreGin = oreGinMan.GetOreGin(destroyed.getLocation());
-				event.setCancelled(true);
-				destroyed.setType(Material.AIR);
-				ItemStack dropItem = new ItemStack(Material.DISPENSER, 1);
-				oreGin.DestroyOreGin(dropItem);
-				oreGinMan.oreGins.remove(oreGin);
+				if (oreGinMan.OreGinLightExistsAt(destroyed.getLocation()))
+					oreGin = oreGinMan.GetOreGin(destroyed.getRelative(BlockFace.DOWN).getLocation());
+				
+				if (!isReinforced(oreGin.getLocation().getBlock()) && 
+					!isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))
+				{
+					event.setCancelled(true);
+					ItemStack dropItem = new ItemStack(Material.DISPENSER, 1);
+					oreGin.destroyOreGin(dropItem);
+					oreGinMan.oreGins.remove(oreGin);
+				}
+				else if (isReinforced(oreGin.getLocation().getBlock()) ||
+					isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))
+				{
+					event.setCancelled(true);
+				}
 			}
-		}
-	}
-	
-	/**
-	 * Checks to see if an OreGin light is being destroyed (block broken)
-	 */
-	@EventHandler
-	public void OreGinLightBroken(BlockBreakEvent event)
-	{
-		Block destroyed = event.getBlock();
-			
-		if (oreGinMan.OreGinLightExistsAt(destroyed.getLocation()))
-		{
-			event.setCancelled(true);
 		}
 	}
 	
@@ -132,12 +132,12 @@ public class OreGinListener implements Listener
 		
 		if (oreGinMan.IsOreGin(event.getItemInHand()))
 		{
-			if (OreGin.ValidOreGinCreationLocation(placed.getLocation()))
+			if (OreGin.validOreGinCreationLocation(placed.getLocation()))
 			{
-				OreGin oreGin = new OreGin(placed.getLocation(), OreGin.GetTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
-						OreGin.GetBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()), oreGinMan);
+				OreGin oreGin = new OreGin(placed.getLocation(), OreGin.getTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
+						OreGin.getBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()), oreGinMan);
 				oreGinMan.AddOreGin(oreGin);
-				event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.GetTierLevel() + " was placed!");
+				event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.getTierLevel() + " was placed!");
 			}
 			else
 			{
@@ -186,11 +186,11 @@ public class OreGinListener implements Listener
 		{
 			if (oreGinMan.OreGinLightExistsAt(event.getBlock().getLocation()))
 			{
-				if (oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).GetMining())
+				if (oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).getMining())
 				{
 					event.setNewCurrent(1);
 				}
-				else if (!oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).GetBroken())
+				else if (!oreGinMan.GetOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).getBroken())
 				{
 					event.setNewCurrent(0);
 				}

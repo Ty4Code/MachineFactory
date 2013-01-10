@@ -152,6 +152,9 @@ public class OreGinPlugin extends JavaPlugin
 									mining_delay, retrieve_valuables, fuel_amount, fuel_type, shaft_width, shaft_height,
 									upgrade_material, upgrade_amount, repair_material, repair_amount));
 		}
+		
+		OreGinPlugin.sendConsoleMessage("Config values successfully loaded!");
+		saveConfig();
 	}
 
 	/**
@@ -239,7 +242,8 @@ public class OreGinPlugin extends JavaPlugin
 		    	Bukkit.getLogger().info("Saving OreGin data...");
 		    	save(oreGinMan, getOreGinSavesFile());
 		    }
-		}, 0L, OreGinPlugin.SAVE_CYCLE * OreGinPlugin.TICKS_PER_SECOND * 60);
+		}, (OreGinPlugin.SAVE_CYCLE * OreGinPlugin.TICKS_PER_SECOND * 60), 
+		OreGinPlugin.SAVE_CYCLE * OreGinPlugin.TICKS_PER_SECOND * 60);
 	}
 	
 	/**
@@ -250,4 +254,11 @@ public class OreGinPlugin extends JavaPlugin
 		return new File(getDataFolder(), ORE_GIN_SAVES_DIRECTORY + ".txt");
 	}
 	
+	/**
+	 * Sends a message to the console with appropriate prefix
+	 */
+	public static void sendConsoleMessage(String message)
+	{
+		Bukkit.getLogger().info(OreGinPlugin.PLUGIN_PREFIX + message);
+	}
 }

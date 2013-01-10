@@ -74,7 +74,7 @@ public class OreGinManager implements ManagerInterface
 			AddOreGin(oreGin);
 		}
 
-		Bukkit.getLogger().info("Successfully loaded " + oreGins.size() + " Ore Gins!");
+		OreGinPlugin.sendConsoleMessage("Successfully loaded " + oreGins.size() + " Ore Gins!");
 		fileInputStream.close();
 	}
 
@@ -88,7 +88,7 @@ public class OreGinManager implements ManagerInterface
 		for (OreGin oreGin : oreGins) 
 		{
 			//ORDER world loc_x loc_y loc_z tier_level block_breaks mining_distance mining broken
-			Location location = oreGin.GetLocation();
+			Location location = oreGin.getLocation();
 			bufferedWriter.append(location.getWorld().getName());
 			bufferedWriter.append(" ");
 			bufferedWriter.append(Integer.toString(location.getBlockX()));
@@ -97,20 +97,20 @@ public class OreGinManager implements ManagerInterface
 			bufferedWriter.append(" ");
 			bufferedWriter.append(Integer.toString(location.getBlockZ()));
             bufferedWriter.append(" ");
-            bufferedWriter.append(Integer.toString(oreGin.GetTierLevel()));
+            bufferedWriter.append(Integer.toString(oreGin.getTierLevel()));
             bufferedWriter.append(" ");
-            bufferedWriter.append(Integer.toString(oreGin.GetBlockBreaks()));
+            bufferedWriter.append(Integer.toString(oreGin.getBlockBreaks()));
             bufferedWriter.append(" ");
-            bufferedWriter.append(Integer.toString(oreGin.GetMiningDistance()));
+            bufferedWriter.append(Integer.toString(oreGin.getMiningDistance()));
             bufferedWriter.append(" ");
-            bufferedWriter.append(Boolean.toString(oreGin.GetMining()));
+            bufferedWriter.append(Boolean.toString(oreGin.getMining()));
             bufferedWriter.append(" ");
-            bufferedWriter.append(Boolean.toString(oreGin.GetBroken()));
+            bufferedWriter.append(Boolean.toString(oreGin.getBroken()));
             bufferedWriter.append("\n");
             
         }
 		
-		Bukkit.getLogger().info("Successfully saved " + oreGins.size() + " Ore Gins!");
+		OreGinPlugin.sendConsoleMessage("Successfully saved " + oreGins.size() + " Ore Gins!");
 
 		bufferedWriter.flush();
 		fileOutputStream.close();
@@ -123,7 +123,7 @@ public class OreGinManager implements ManagerInterface
 	{
 		for (OreGin oreGin : oreGins)
 		{
-			oreGin.Update();
+			oreGin.update();
 		}
 	}
 	
@@ -135,20 +135,20 @@ public class OreGinManager implements ManagerInterface
 		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(1);
 		Material upgradeMaterial = desiredTierProperties.GetUpgradeMaterial();
 		
-		if (OreGin.ValidOreGinCreationLocation(machineLocation))
+		if (OreGin.validOreGinCreationLocation(machineLocation))
 		{
-			if (!OreGinExistsAt(machineLocation) && OreGin.ValidUpgrade(machineLocation, 1))
+			if (!OreGinExistsAt(machineLocation) && OreGin.validUpgrade(machineLocation, 1))
 			{
 				OreGin oreGin = new OreGin(machineLocation, this);
 				AddOreGin(oreGin);
-				oreGin.RemoveUpgradeMaterial(1);
+				oreGin.removeUpgradeMaterial(1);
 				plugin.getLogger().info("New OreGin created!");
 				return ChatColor.GREEN + "Successfully created OreGin!";
 			}
 			else
 			{
 				OreGinSoundCollection.ErrorSound().playSound(machineLocation);
-				return ChatColor.RED + "Missing creation materials! " + OreGin.RequiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
+				return ChatColor.RED + "Missing creation materials! " + OreGin.requiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
 						upgradeMaterial, machineLocation);	
 			}
 		}
@@ -164,7 +164,7 @@ public class OreGinManager implements ManagerInterface
 	 */
 	public boolean AddOreGin(OreGin oreGin)
 	{
-		if(oreGin.GetLocation().getBlock().getType().equals(Material.DISPENSER) && !OreGinExistsAt(oreGin.GetLocation()))
+		if(oreGin.getLocation().getBlock().getType().equals(Material.DISPENSER) && !OreGinExistsAt(oreGin.getLocation()))
 		{
 			oreGins.add(oreGin);
 			return true;
@@ -182,7 +182,7 @@ public class OreGinManager implements ManagerInterface
 	{
 		for (OreGin oreGin : oreGins)
 		{
-			if (oreGin.GetLocation().equals(machineLocation))
+			if (oreGin.getLocation().equals(machineLocation))
 				return oreGin;
 		}
 		
