@@ -239,7 +239,7 @@ public class OreGinPlugin extends JavaPlugin
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 		    @Override  
 		    public void run() {
-		    	Bukkit.getLogger().info("Saving OreGin data...");
+		    	OreGinPlugin.sendConsoleMessage("Saving OreGin data...");
 		    	save(oreGinMan, getOreGinSavesFile());
 		    }
 		}, (OreGinPlugin.SAVE_CYCLE * OreGinPlugin.TICKS_PER_SECOND * 60), 

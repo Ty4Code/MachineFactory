@@ -351,6 +351,7 @@ public class OreGin
 				{
 					block.setType(Material.AIR);
 				}
+				else 
 				{
 					block.breakNaturally();
 				}

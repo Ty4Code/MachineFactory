@@ -3,8 +3,8 @@ general:
   save_cycle: 10
   max_tiers: 7
   oregin_upgrade_wand: YELLOW_FLOWER
-  oregin_activation_wand: GRAVEL
-  oregin_repair_wand: RED_ROSE
+  oregin_activation_wand: RED_ROSE
+  oregin_repair_wand: IRON_SPADE
   oregin_light_on: REDSTONE_LAMP_ON
   oregin_light_off: REDSTONE_LAMP_OFF
   redstone_activation_enabled: true
