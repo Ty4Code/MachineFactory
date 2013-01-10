@@ -31,6 +31,7 @@ public class OreGinPlugin extends JavaPlugin
 	public static final int TICKS_PER_SECOND = 20; //The number of ticks per second
 	
 	public static int UPDATE_CYCLE; //Update time in ticks
+	public static int MAXIMUM_BLOCK_BREAKS_PER_CYCLE; //The maximum number of block breaks per update cycle.
 	public static int SAVE_CYCLE; //The time between periodic saves in minutes
 	public static Material OREGIN_UPGRADE_WAND; //The wand used for creating and upgrading OreGins
 	public static Material OREGIN_ACTIVATION_WAND; //The wand used for powering OreGins
@@ -86,6 +87,7 @@ public class OreGinPlugin extends JavaPlugin
 	{
 		//Load general config values
 		OreGinPlugin.UPDATE_CYCLE = getConfig().getInt("general.update_cycle");
+		OreGinPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE = getConfig().getInt("general.maximum_block_breaks_per_cycle");
 		OreGinPlugin.SAVE_CYCLE = getConfig().getInt("general.save_cycle");
 		OreGinPlugin.OREGIN_UPGRADE_WAND = Material.valueOf(getConfig().getString("general.oregin_upgrade_wand"));
 		OreGinPlugin.OREGIN_ACTIVATION_WAND = Material.valueOf(getConfig().getString("general.oregin_activation_wand"));

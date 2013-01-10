@@ -32,7 +32,6 @@ public class OreGinSoundCollection
 	public static OreGinSound PowerOffSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
-		soundNames.add("note.pling");
 		soundNames.add("note.bass");
 		soundNames.add("fireworks.blast");
 		soundNames.add("mob.blaze.hit2");

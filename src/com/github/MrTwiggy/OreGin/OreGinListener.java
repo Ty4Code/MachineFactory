@@ -111,7 +111,7 @@ public class OreGinListener implements Listener
 					event.setCancelled(true);
 					ItemStack dropItem = new ItemStack(Material.DISPENSER, 1);
 					oreGin.destroyOreGin(dropItem);
-					oreGinMan.oreGins.remove(oreGin);
+					oreGinMan.removeOreGin(oreGin);
 				}
 				else if (isReinforced(oreGin.getLocation().getBlock()) ||
 					isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))

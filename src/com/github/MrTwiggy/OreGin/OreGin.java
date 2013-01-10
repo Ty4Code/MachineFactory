@@ -117,7 +117,16 @@ public class OreGin
 					if (miningTimer >= oreGinProperties.GetMiningDelay())
 					{
 						miningTimer = 0;
-						mineForward();
+						if ((oreGinMan.getBlockBreaksDuringCycle() 
+							+ (oreGinProperties.GetShaftHeight()*oreGinProperties.GetShaftWidth())) < OreGinPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE)
+						{
+							mineForward();
+						}
+						else
+						{
+							OreGinPlugin.sendConsoleMessage("Maximum block breaks have been reached! " 
+									+ oreGinMan.getBlockBreaksDuringCycle() + " out of " + OreGinPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE);
+						}
 					}
 				}
 				else //OreGin is mining but doesn't have enough fuel
@@ -283,6 +292,7 @@ public class OreGin
 							if (mineBlock(startingPos.getBlock().getLocation().add(blockOffset(x,y,z)).getBlock().getRelative(facing, miningDistance + 1)))
 							{
 								blockBreaks++;
+								oreGinMan.incrementBlockBreaksDuringCycle();
 							}
 						}
 					}
@@ -312,9 +322,8 @@ public class OreGin
 	public boolean mineBlock(Block block)
 	{
 		Material blockType = block.getType();
-		Location possibleLight = block.getRelative(BlockFace.UP).getLocation();
 		
-		if ( oreGinMan.OreGinExistsAt(block.getLocation()) || oreGinMan.OreGinLightExistsAt(possibleLight))
+		if ( oreGinMan.OreGinExistsAt(block.getLocation()) || oreGinMan.OreGinLightExistsAt(block.getLocation()))
 		{
 			return false;
 		}
@@ -462,16 +471,24 @@ public class OreGin
 	{
 		if (!mining)
 		{
-			if (fuelAvailable())
+			if (!broken)
 			{
-				powerOnOreGin();
-				return ChatColor.GREEN + "OreGin activated!";
+				if (fuelAvailable())
+				{
+					powerOnOreGin();
+					return ChatColor.GREEN + "OreGin activated!";
+				}
+				else
+				{
+					OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
+					return ChatColor.RED + "Missing fuel! " + requiredAvailableMaterials(oreGinProperties.GetFuelAmount(),
+																			oreGinProperties.GetFuelMaterial());
+				}
 			}
 			else
 			{
 				OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
-				return ChatColor.RED + "Missing fuel! " + requiredAvailableMaterials(oreGinProperties.GetFuelAmount(),
-																		oreGinProperties.GetFuelMaterial());
+				return ChatColor.RED + "OreGin is broken! You must repair it first!";
 			}
 		}
 		else

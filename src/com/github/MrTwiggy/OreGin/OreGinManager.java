@@ -29,8 +29,10 @@ import org.bukkit.inventory.ItemStack;
 public class OreGinManager implements ManagerInterface
 {
 	
-	List<OreGin> oreGins; //List of current OreGins
-	public OreGinPlugin plugin; //OreGinPlugin object
+	private List<OreGin> oreGins; //List of current OreGins
+	private OreGinPlugin plugin; //OreGinPlugin object
+	
+	private int blockBreaksDuringCycle = 0;//The number of blocks broken during the current cycle.
 	
 	/**
 	 * Constructor
@@ -40,12 +42,39 @@ public class OreGinManager implements ManagerInterface
 		this.plugin = plugin;
 		oreGins = new ArrayList<OreGin>();
 		
-		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+		updateOreGins();
+	}
+
+	/**
+	 * Updates all the active OreGins
+	 */
+	public void updateOreGins()
+	{
+		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable()
+		{
 		    @Override  
-		    public void run() {
+		    public void run() 
+		    {
+		    	blockBreaksDuringCycle = 0;
 		        UpdateOreGins();
 		    }
 		}, 0L, OreGinPlugin.UPDATE_CYCLE);
+	}
+	
+	/**
+	 * 'blockBreaksDuringCycle' public accessor
+	 */
+	public int getBlockBreaksDuringCycle()
+	{
+		return blockBreaksDuringCycle;
+	}
+	
+	/**
+	 * Increments the blockBreaksDuringCycle member by 1.
+	 */
+	public void incrementBlockBreaksDuringCycle()
+	{
+		blockBreaksDuringCycle++;
 	}
 	
 	/**
@@ -189,6 +218,14 @@ public class OreGinManager implements ManagerInterface
 		return null;
 	}
 
+	/**
+	 * Removes a specific OreGin from the list
+	 */
+	public void removeOreGin(OreGin oreGin)
+	{
+		oreGins.remove(oreGin);
+	}
+	
 	/**
 	 * Returns whether an OreGin exists at the given Location
 	 */
