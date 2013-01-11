@@ -75,7 +75,7 @@ public class OreGin
 		setDefaultValues();
 		this.oreGinLocation = oreGinLocation;
 		this.oreGinMan = oreGinMan;
-		OreGinSoundCollection.CreationSound().playSound(oreGinLocation);
+		OreGinSoundCollection.getCreationSound().playSound(oreGinLocation);
 		updateOreGinProperties();
 		blockPower = oreGinLocation.getBlock().getBlockPower();
 	}
@@ -90,7 +90,7 @@ public class OreGin
 		this.tierLevel = tierLevel;
 		this.oreGinLocation = oreGinLocation;
 		this.oreGinMan = oreGinMan;
-		OreGinSoundCollection.PlacementSound().playSound(oreGinLocation);
+		OreGinSoundCollection.getPlacementSound().playSound(oreGinLocation);
 		updateOreGinProperties();
 		blockPower = oreGinLocation.getBlock().getBlockPower();
 	}
@@ -111,14 +111,14 @@ public class OreGin
 			if (mining)
 			{
 				turnOnLight();
-				if (fuelAvailable())
+				if (isFuelAvailable())
 				{
 					miningTimer += OreGinPlugin.UPDATE_CYCLE;
-					if (miningTimer >= oreGinProperties.GetMiningDelay())
+					if (miningTimer >= oreGinProperties.getMiningDelay())
 					{
 						miningTimer = 0;
 						if ((oreGinMan.getBlockBreaksDuringCycle() 
-							+ (oreGinProperties.GetShaftHeight()*oreGinProperties.GetShaftWidth())) < OreGinPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE)
+							+ (oreGinProperties.getShaftHeight()*oreGinProperties.getShaftWidth())) < OreGinPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE)
 						{
 							mineForward();
 						}
@@ -142,7 +142,7 @@ public class OreGin
 		else //OreGin is broken
 		{
 			toggleLight();
-			OreGinSoundCollection.BrokenSound().playSound(oreGinLocation);
+			OreGinSoundCollection.getBrokenSound().playSound(oreGinLocation);
 		}
 
 	}
@@ -208,7 +208,7 @@ public class OreGin
 			oreGinLocation.getBlock().getRelative(BlockFace.UP,1).setType(Material.AIR);
 		}
 		oreGinLocation.getBlock().setType(Material.AIR);
-		OreGinSoundCollection.DestructionSound().playSound(oreGinLocation);
+		OreGinSoundCollection.getDestructionSound().playSound(oreGinLocation);
 	}
 	
 	/**
@@ -224,12 +224,12 @@ public class OreGin
 		ChatColor colorCode;
 		String status;
 		
-		if (blockBreaks >= oreGinProperties.GetMaxBlockBreaks())
+		if (blockBreaks >= oreGinProperties.getMaxBlockBreaks())
 		{
 			colorCode = ChatColor.RED;
 			status = "Broken";
 		}
-		else if (blockBreaks >= oreGinProperties.GetMaxBlockBreaks()/2)
+		else if (blockBreaks >= oreGinProperties.getMaxBlockBreaks()/2)
 		{
 			colorCode = ChatColor.YELLOW;
 			status = "Working";
@@ -272,11 +272,11 @@ public class OreGin
 	 */
 	public void mineForward()
 	{
-		if (miningDistance < oreGinProperties.GetMaxMiningDistance())
+		if (miningDistance < oreGinProperties.getMaxMiningDistance())
 		{
-			if (blockBreaks < oreGinProperties.GetMaxBlockBreaks())
+			if (blockBreaks < oreGinProperties.getMaxBlockBreaks())
 			{
-				Vector miningOffset = miningOffset();
+				Vector miningOffset = getMiningOffset();
 				Location startingPos = oreGinLocation.getBlock().getLocation().add(
 						(int)miningOffset.getX(), (int)miningOffset.getY(), (int)miningOffset.getZ());
 
@@ -289,7 +289,7 @@ public class OreGin
 					{
 						for (int z = 0; z < Math.max(1,  Math.abs(miningOffset.getZ()*2)); z++)
 						{
-							if (mineBlock(startingPos.getBlock().getLocation().add(blockOffset(x,y,z)).getBlock().getRelative(facing, miningDistance + 1)))
+							if (mineBlock(startingPos.getBlock().getLocation().add(getBlockOffset(x,y,z)).getBlock().getRelative(facing, miningDistance + 1)))
 							{
 								blockBreaks++;
 								oreGinMan.incrementBlockBreaksDuringCycle();
@@ -301,7 +301,7 @@ public class OreGin
 				if (removeFuel())
 				{
 					miningDistance++;
-					OreGinSoundCollection.MiningSound().playSound(oreGinLocation);
+					OreGinSoundCollection.getMiningSound().playSound(oreGinLocation);
 				}
 			}
 			else
@@ -323,7 +323,7 @@ public class OreGin
 	{
 		Material blockType = block.getType();
 		
-		if ( oreGinMan.OreGinExistsAt(block.getLocation()) || oreGinMan.OreGinLightExistsAt(block.getLocation()))
+		if ( oreGinMan.oreGinExistsAt(block.getLocation()) || oreGinMan.oreGinLightExistsAt(block.getLocation()))
 		{
 			return false;
 		}
@@ -340,7 +340,7 @@ public class OreGin
 		{
 			if (!isReinforced(block))
 			{
-				if (oreGinProperties.GetRetrieveValuables() && OreGinPlugin.VALUABLES.contains(blockType))
+				if (oreGinProperties.getRetrieveValuables() && OreGinPlugin.VALUABLES.contains(blockType))
 				{
 					Collection<ItemStack> drops = block.getDrops();
 						
@@ -376,7 +376,7 @@ public class OreGin
 	/**
 	 * Block Offset for mining
 	 */
-	public Vector blockOffset(double x, double y, double z)
+	public Vector getBlockOffset(double x, double y, double z)
 	{
 		BlockFace facing = getDirection(oreGinLocation.getBlock().getState().getRawData());
 		
@@ -395,37 +395,37 @@ public class OreGin
 	/**
 	 * Offset for the starting mining position
 	 */
-	public Vector miningOffset()
+	public Vector getMiningOffset()
 	{
 		BlockFace facing = getDirection(oreGinLocation.getBlock().getState().getRawData());
 		
 		Vector miningOffset = new Vector(0, 0, 0);
 		
 		//Determines the Z or X offset
-		if (oreGinProperties.GetShaftWidth() > 1)
+		if (oreGinProperties.getShaftWidth() > 1)
 		{
 			if (facing.equals(BlockFace.NORTH))
 			{
-					miningOffset.setX((double)-oreGinProperties.GetShaftWidth() / 2);
+					miningOffset.setX((double)-oreGinProperties.getShaftWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.SOUTH))
 			{
-					miningOffset.setX((double)oreGinProperties.GetShaftWidth() / 2);
+					miningOffset.setX((double)oreGinProperties.getShaftWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.EAST))
 			{
-					miningOffset.setZ((double)-oreGinProperties.GetShaftWidth() / 2);
+					miningOffset.setZ((double)-oreGinProperties.getShaftWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.WEST))
 			{
-					miningOffset.setZ((double)oreGinProperties.GetShaftWidth() / 2);
+					miningOffset.setZ((double)oreGinProperties.getShaftWidth() / 2);
 			}
 		}
 		
 		//Determines the Y offset
-		if (oreGinProperties.GetShaftHeight() > 1)
+		if (oreGinProperties.getShaftHeight() > 1)
 		{
-			miningOffset.setY((double)-oreGinProperties.GetShaftHeight() / 2);
+			miningOffset.setY((double)-oreGinProperties.getShaftHeight() / 2);
 		}
 		
 		return miningOffset;
@@ -443,7 +443,7 @@ public class OreGin
 		miningTimer = 0;
 		mining = false;
 		turnOffLight();
-		OreGinSoundCollection.PowerOffSound().playSound(oreGinLocation);
+		OreGinSoundCollection.getPowerOffSound().playSound(oreGinLocation);
 	}
 	
 	/**
@@ -451,16 +451,16 @@ public class OreGin
 	 */
 	public void powerOnOreGin()
 	{
-		if (fuelAvailable())
+		if (isFuelAvailable())
 		{
 			mining = true;
 			miningTimer = 0;
 			turnOnLight();
-			OreGinSoundCollection.PowerOnSound().playSound(oreGinLocation);
+			OreGinSoundCollection.getPowerOnSound().playSound(oreGinLocation);
 		}
 		else
 		{
-			OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
+			OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
 		}
 	}
 	
@@ -473,21 +473,21 @@ public class OreGin
 		{
 			if (!broken)
 			{
-				if (fuelAvailable())
+				if (isFuelAvailable())
 				{
 					powerOnOreGin();
 					return ChatColor.GREEN + "OreGin activated!";
 				}
 				else
 				{
-					OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
-					return ChatColor.RED + "Missing fuel! " + requiredAvailableMaterials(oreGinProperties.GetFuelAmount(),
-																			oreGinProperties.GetFuelMaterial());
+					OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
+					return ChatColor.RED + "Missing fuel! " + requiredAvailableMaterials(oreGinProperties.getFuelAmount(),
+																			oreGinProperties.getFuelMaterial());
 				}
 			}
 			else
 			{
-				OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
+				OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
 				return ChatColor.RED + "OreGin is broken! You must repair it first!";
 			}
 		}
@@ -513,25 +513,25 @@ public class OreGin
 		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(desiredTier);
 		if (desiredTier <= OreGinPlugin.MAX_TIERS)
 		{
-			Material upgradeMaterial = desiredTierProperties.GetUpgradeMaterial();
+			Material upgradeMaterial = desiredTierProperties.getUpgradeMaterial();
 			if (upgradeMaterialAvailable(desiredTier))
 			{
 				removeUpgradeMaterial(desiredTier);
 				tierLevel++;
 				updateOreGinProperties();
-				OreGinSoundCollection.UpgradeSound().playSound(oreGinLocation);
+				OreGinSoundCollection.getUpgradeSound().playSound(oreGinLocation);
 				return ChatColor.GREEN + "OreGin successfully upgraded to tier " + tierLevel + "!";
 			}
 			else
 			{
-				OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
-				return ChatColor.RED + "Missing upgrade materials! " + requiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
+				OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
+				return ChatColor.RED + "Missing upgrade materials! " + requiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
 						upgradeMaterial);	
 			}
 		}
 		else
 		{
-			OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
+			OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
 			return ChatColor.RED + "OreGin is already max tier level!";
 		}
 	}
@@ -541,8 +541,8 @@ public class OreGin
 	 */
 	public boolean removeUpgradeMaterial(int desiredTier)
 	{
-		return removeMaterial(OreGinPlugin.Ore_Gin_Properties.get(desiredTier).GetUpgradeAmount(),
-				OreGinPlugin.Ore_Gin_Properties.get(desiredTier).GetUpgradeMaterial(), this.oreGinLocation);
+		return removeMaterial(OreGinPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeAmount(),
+				OreGinPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeMaterial(), this.oreGinLocation);
 	}
 
 	/**
@@ -550,17 +550,17 @@ public class OreGin
 	 */
 	public boolean upgradeMaterialAvailable(int desiredTier)
 	{
-		return materialAvailable(OreGinPlugin.Ore_Gin_Properties.get(desiredTier).GetUpgradeAmount(),
-				OreGinPlugin.Ore_Gin_Properties.get(desiredTier).GetUpgradeMaterial(), this.oreGinLocation);
+		return isMaterialAvailable(OreGinPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeAmount(),
+				OreGinPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeMaterial(), this.oreGinLocation);
 	}
 	
 	/**
 	 * Returns whether the material for an upgrade is available
 	 */
-	public static boolean upgradeMaterialAvailable(int desiredTier, Location machineLocation)
+	public static boolean isUpgradeMaterialAvailable(int desiredTier, Location machineLocation)
 	{
-		return materialAvailable(OreGinPlugin.Ore_Gin_Properties.get(desiredTier).GetUpgradeAmount(),
-				OreGinPlugin.Ore_Gin_Properties.get(desiredTier).GetUpgradeMaterial(), machineLocation);
+		return isMaterialAvailable(OreGinPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeAmount(),
+				OreGinPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeMaterial(), machineLocation);
 	}
 	
 	/*
@@ -574,24 +574,24 @@ public class OreGin
 	{
 		if (broken)
 		{
-			if (repairMaterialAvailable())
+			if (isRepairMaterialAvailable())
 			{
 				removeRepairMaterials();
 				broken = false;
 				blockBreaks = 0;
-				OreGinSoundCollection.RepairSound().playSound(oreGinLocation);
+				OreGinSoundCollection.getRepairSound().playSound(oreGinLocation);
 				return ChatColor.GREEN + "OreGin has been successfully repaired!";
 			}
 			else
 			{
-				OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
-				return ChatColor.RED + "Missing repair materials! " + requiredAvailableMaterials(oreGinProperties.GetRepairAmount(),
-																		oreGinProperties.GetRepairMaterial());
+				OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
+				return ChatColor.RED + "Missing repair materials! " + requiredAvailableMaterials(oreGinProperties.getRepairAmount(),
+																		oreGinProperties.getRepairMaterial());
 			}
 		}
 		else
 		{
-			OreGinSoundCollection.ErrorSound().playSound(oreGinLocation);
+			OreGinSoundCollection.getErrorSound().playSound(oreGinLocation);
 			return ChatColor.RED + "The OreGin is not broken!";
 		}
 	}
@@ -599,9 +599,9 @@ public class OreGin
 	/**
 	 * Returns whether there is material available for repairing
 	 */
-	public boolean repairMaterialAvailable()
+	public boolean isRepairMaterialAvailable()
 	{
-		return materialAvailable(oreGinProperties.GetRepairAmount(), oreGinProperties.GetRepairMaterial(), this.oreGinLocation);
+		return isMaterialAvailable(oreGinProperties.getRepairAmount(), oreGinProperties.getRepairMaterial(), this.oreGinLocation);
 	}
 	
 	/**
@@ -609,7 +609,7 @@ public class OreGin
 	 */
 	public boolean removeRepairMaterials()
 	{
-		return removeMaterial(oreGinProperties.GetRepairAmount(), oreGinProperties.GetRepairMaterial(), this.oreGinLocation);
+		return removeMaterial(oreGinProperties.getRepairAmount(), oreGinProperties.getRepairMaterial(), this.oreGinLocation);
 	}
 		
 	/*
@@ -619,9 +619,9 @@ public class OreGin
 	/**
 	 * Returns whether there is enough fuel available for one mining operation
 	 */
-	public boolean fuelAvailable()
+	public boolean isFuelAvailable()
 	{
-		return materialAvailable(oreGinProperties.GetFuelAmount(), oreGinProperties.GetFuelMaterial(), this.oreGinLocation);
+		return isMaterialAvailable(oreGinProperties.getFuelAmount(), oreGinProperties.getFuelMaterial(), this.oreGinLocation);
 	}
 	
 	/**
@@ -629,7 +629,7 @@ public class OreGin
 	 */
 	public boolean removeFuel()
 	{		
-		return removeMaterial(oreGinProperties.GetFuelAmount(), oreGinProperties.GetFuelMaterial(), this.oreGinLocation);
+		return removeMaterial(oreGinProperties.getFuelAmount(), oreGinProperties.getFuelMaterial(), this.oreGinLocation);
 	}
 
 	/*
@@ -688,17 +688,17 @@ public class OreGin
 	/**
 	 * Checks if a specific material of given amount is available in dispenser inventory
 	 */
-	public boolean materialAvailable(int amount, Material material)
+	public boolean isMaterialAvailable(int amount, Material material)
 	{
-		return materialAvailable(amount, material, this.oreGinLocation);
+		return isMaterialAvailable(amount, material, this.oreGinLocation);
 	}
 	
 	/**
 	 * Returns how much of a specified material is available in dispenser inventory
 	 */
-	public int materialAvailableAmount(Material material)
+	public int getMaterialAvailableAmount(Material material)
 	{
-		return materialAvailableAmount(material, this.oreGinLocation);
+		return getMaterialAvailableAmount(material, this.oreGinLocation);
 	}
 	
 	/**
@@ -707,7 +707,7 @@ public class OreGin
 	public String requiredAvailableMaterials(int amount, Material material)
 	{
 		return "Required: (" + amount + " " + material.toString() + ") Available: ("
-				+ OreGin.materialAvailableAmount(material, oreGinLocation) + " " + material.toString() + ")";
+				+ OreGin.getMaterialAvailableAmount(material, oreGinLocation) + " " + material.toString() + ")";
 	}
 	
 	/**
@@ -838,7 +838,7 @@ public class OreGin
 	/**
 	 * Checks if a specific material of given amount is available in dispenser
 	 */
-	public static boolean materialAvailable(int amount, Material material, Location machineLocation)
+	public static boolean isMaterialAvailable(int amount, Material material, Location machineLocation)
 	{
 		if (machineLocation.getBlock().getType() == Material.DISPENSER)
 		{
@@ -864,16 +864,16 @@ public class OreGin
 	/**
 	 * Returns the "Required: (X MATERIAL) Available: (Y MATERIAL)" message
 	 */
-	public static String requiredAvailableMaterials(int amount, Material material, Location machineLocation)
+	public static String getRequiredAvailableMaterials(int amount, Material material, Location machineLocation)
 	{
 		return "Required: (" + amount + " " + material.toString() + ") Available: ("
-				+ OreGin.materialAvailableAmount(material, machineLocation) + " " + material.toString() + ")";
+				+ OreGin.getMaterialAvailableAmount(material, machineLocation) + " " + material.toString() + ")";
 	}
 	
 	/**
      * Returns how much of a specified material is available in dispenser
 	 */
-	public static int materialAvailableAmount(Material material, Location machineLocation)
+	public static int getMaterialAvailableAmount(Material material, Location machineLocation)
 	{
 		if (machineLocation.getBlock().getType() == Material.DISPENSER)
 		{
@@ -899,15 +899,15 @@ public class OreGin
 	/**
 	 * Whether OreGin is upgrade-able
 	 */
-	public static boolean validUpgrade(Location machineLocation, int desiredTier)
+	public static boolean isValidUpgrade(Location machineLocation, int desiredTier)
 	{
-		return (desiredTier <= OreGinPlugin.MAX_TIERS) && upgradeMaterialAvailable(desiredTier, machineLocation);
+		return (desiredTier <= OreGinPlugin.MAX_TIERS) && isUpgradeMaterialAvailable(desiredTier, machineLocation);
 	}
 	
 	/**
 	 * Returns whether location is suitable for creating/placing an OreGin
 	 */
-	public static boolean validOreGinCreationLocation(Location machineLocation)
+	public static boolean isValidOreGinCreationLocation(Location machineLocation)
 	{
 		return (machineLocation.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR));
 	}

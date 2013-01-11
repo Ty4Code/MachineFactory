@@ -15,7 +15,7 @@ public class OreGinSoundCollection
 	/**
 	 * Power On Sound
 	 */
-	public static OreGinSound PowerOnSound()
+	public static OreGinSound getPowerOnSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("mob.slime.small3");
@@ -29,7 +29,7 @@ public class OreGinSoundCollection
 	/**
 	 * Power Off Sound
 	 */
-	public static OreGinSound PowerOffSound()
+	public static OreGinSound getPowerOffSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("note.bass");
@@ -43,7 +43,7 @@ public class OreGinSoundCollection
 	/**
 	 * Creation Sound
 	 */
-	public static OreGinSound CreationSound()
+	public static OreGinSound getCreationSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("fireworks.blast");
@@ -56,7 +56,7 @@ public class OreGinSoundCollection
 	/**
 	 * Destruction Sound
 	 */
-	public static OreGinSound DestructionSound()
+	public static OreGinSound getDestructionSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("mob.skeleton.death");
@@ -69,7 +69,7 @@ public class OreGinSoundCollection
 	/**
 	 * Upgrade Sound
 	 */
-	public static OreGinSound UpgradeSound()
+	public static OreGinSound getUpgradeSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.levelup");
@@ -82,7 +82,7 @@ public class OreGinSoundCollection
 	/**
 	 * Mining Sound
 	 */
-	public static OreGinSound MiningSound()
+	public static OreGinSound getMiningSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.break");
@@ -96,7 +96,7 @@ public class OreGinSoundCollection
 	/**
 	 * Broken Sound
 	 */
-	public static OreGinSound BrokenSound()
+	public static OreGinSound getBrokenSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("note.pling");
@@ -107,7 +107,7 @@ public class OreGinSoundCollection
 	/**
 	 * Placement Sound
 	 */
-	public static OreGinSound PlacementSound()
+	public static OreGinSound getPlacementSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.anvil_land");
@@ -121,7 +121,7 @@ public class OreGinSoundCollection
 	/**
 	 * Repair Sound
 	 */
-	public static OreGinSound RepairSound()
+	public static OreGinSound getRepairSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.eat1");
@@ -132,7 +132,7 @@ public class OreGinSoundCollection
 	/**
 	 * Error Sound
 	 */
-	public static OreGinSound ErrorSound()
+	public static OreGinSound getErrorSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.anvil_land");

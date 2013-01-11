@@ -56,7 +56,7 @@ public class OreGinPlugin extends JavaPlugin
 		
 		getConfig().options().copyDefaults(true);
 		Ore_Gin_Properties = new HashMap<Integer,OreGinProperties>();
-		InitializeOreGinProperties();
+		initializeOreGinProperties();
 		
 		oreGinMan = new OreGinManager(this);
 		oreGinListener = new OreGinListener(oreGinMan);
@@ -83,7 +83,7 @@ public class OreGinPlugin extends JavaPlugin
 	 * Initializes the default OreGinProperties from config
 	 */
 	@SuppressWarnings("unchecked")
-	public void InitializeOreGinProperties()
+	public void initializeOreGinProperties()
 	{
 		//Load general config values
 		OreGinPlugin.UPDATE_CYCLE = getConfig().getInt("general.update_cycle");
@@ -137,18 +137,18 @@ public class OreGinPlugin extends JavaPlugin
 		//Load OreGin tier properties
 		for (int i = 1; i <= OreGinPlugin.MAX_TIERS; i++)
 		{
-			int max_mining_distance = getConfig().getInt(OreGinPropertiesPathStart(i) + "max_mining_distance"); 
-			int max_block_breaks= getConfig().getInt(OreGinPropertiesPathStart(i) + "max_block_breaks"); 
-			int mining_delay= getConfig().getInt(OreGinPropertiesPathStart(i) + "mining_delay"); 
-			boolean retrieve_valuables = getConfig().getBoolean(OreGinPropertiesPathStart(i) + "retrieve_valuables");
-			Material fuel_type = Material.valueOf(getConfig().getString(OreGinPropertiesPathStart(i) + "fuel_type"));
-			int fuel_amount= getConfig().getInt(OreGinPropertiesPathStart(i) + "fuel_amount");
-			Material upgrade_material = Material.valueOf(getConfig().getString(OreGinPropertiesPathStart(i) + "upgrade_material")); 
-			int upgrade_amount = getConfig().getInt(OreGinPropertiesPathStart(i) + "upgrade_amount");
-			Material repair_material = Material.valueOf(getConfig().getString(OreGinPropertiesPathStart(i) + "repair_material")); 
-			int repair_amount = getConfig().getInt(OreGinPropertiesPathStart(i) + "repair_amount");
-			int shaft_width = getConfig().getInt(OreGinPropertiesPathStart(i) + "shaft_width");
-			int shaft_height = getConfig().getInt(OreGinPropertiesPathStart(i) + "shaft_height");
+			int max_mining_distance = getConfig().getInt(getOreGinPropertiesPathStart(i) + "max_mining_distance"); 
+			int max_block_breaks= getConfig().getInt(getOreGinPropertiesPathStart(i) + "max_block_breaks"); 
+			int mining_delay= getConfig().getInt(getOreGinPropertiesPathStart(i) + "mining_delay"); 
+			boolean retrieve_valuables = getConfig().getBoolean(getOreGinPropertiesPathStart(i) + "retrieve_valuables");
+			Material fuel_type = Material.valueOf(getConfig().getString(getOreGinPropertiesPathStart(i) + "fuel_type"));
+			int fuel_amount= getConfig().getInt(getOreGinPropertiesPathStart(i) + "fuel_amount");
+			Material upgrade_material = Material.valueOf(getConfig().getString(getOreGinPropertiesPathStart(i) + "upgrade_material")); 
+			int upgrade_amount = getConfig().getInt(getOreGinPropertiesPathStart(i) + "upgrade_amount");
+			Material repair_material = Material.valueOf(getConfig().getString(getOreGinPropertiesPathStart(i) + "repair_material")); 
+			int repair_amount = getConfig().getInt(getOreGinPropertiesPathStart(i) + "repair_amount");
+			int shaft_width = getConfig().getInt(getOreGinPropertiesPathStart(i) + "shaft_width");
+			int shaft_height = getConfig().getInt(getOreGinPropertiesPathStart(i) + "shaft_height");
 			
 			Ore_Gin_Properties.put(i, new OreGinProperties(max_mining_distance, max_block_breaks,
 									mining_delay, retrieve_valuables, fuel_amount, fuel_type, shaft_width, shaft_height,
@@ -162,7 +162,7 @@ public class OreGinPlugin extends JavaPlugin
 	/**
 	 * Returns the path for tier level starts
 	 */
-	public String OreGinPropertiesPathStart(int tierLevel)
+	public String getOreGinPropertiesPathStart(int tierLevel)
 	{
 		return "oregin_tier_properties.tier" + tierLevel + ".";
 	}

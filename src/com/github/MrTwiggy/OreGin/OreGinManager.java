@@ -56,7 +56,10 @@ public class OreGinManager implements ManagerInterface
 		    public void run() 
 		    {
 		    	blockBreaksDuringCycle = 0;
-		        UpdateOreGins();
+		    	for (OreGin oreGin : oreGins)
+				{
+					oreGin.update();
+				}
 		    }
 		}, 0L, OreGinPlugin.UPDATE_CYCLE);
 	}
@@ -100,7 +103,7 @@ public class OreGinManager implements ManagerInterface
 			boolean broken = Boolean.parseBoolean(parts[8]);
 			
 			OreGin oreGin = new OreGin(blockBreaks, tierLevel, mining, broken, miningDistance, oreGinLocation, this);
-			AddOreGin(oreGin);
+			addOreGin(oreGin);
 		}
 
 		OreGinPlugin.sendConsoleMessage("Successfully loaded " + oreGins.size() + " Ore Gins!");
@@ -144,46 +147,35 @@ public class OreGinManager implements ManagerInterface
 		bufferedWriter.flush();
 		fileOutputStream.close();
 	}
-	
-	/**
-	 * Updates all the OreGins
-	 */
-	public void UpdateOreGins()
-	{
-		for (OreGin oreGin : oreGins)
-		{
-			oreGin.update();
-		}
-	}
-	
+
 	/**
 	 * Attempts to create an OreGin at the location and returns result message
 	 */
-	public String CreateOreGin(Location machineLocation)
+	public String createOreGin(Location machineLocation)
 	{
 		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(1);
-		Material upgradeMaterial = desiredTierProperties.GetUpgradeMaterial();
+		Material upgradeMaterial = desiredTierProperties.getUpgradeMaterial();
 		
-		if (OreGin.validOreGinCreationLocation(machineLocation))
+		if (OreGin.isValidOreGinCreationLocation(machineLocation))
 		{
-			if (!OreGinExistsAt(machineLocation) && OreGin.validUpgrade(machineLocation, 1))
+			if (!oreGinExistsAt(machineLocation) && OreGin.isValidUpgrade(machineLocation, 1))
 			{
 				OreGin oreGin = new OreGin(machineLocation, this);
-				AddOreGin(oreGin);
+				addOreGin(oreGin);
 				oreGin.removeUpgradeMaterial(1);
 				plugin.getLogger().info("New OreGin created!");
 				return ChatColor.GREEN + "Successfully created OreGin!";
 			}
 			else
 			{
-				OreGinSoundCollection.ErrorSound().playSound(machineLocation);
-				return ChatColor.RED + "Missing creation materials! " + OreGin.requiredAvailableMaterials(desiredTierProperties.GetUpgradeAmount(),
+				OreGinSoundCollection.getErrorSound().playSound(machineLocation);
+				return ChatColor.RED + "Missing creation materials! " + OreGin.getRequiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
 						upgradeMaterial, machineLocation);	
 			}
 		}
 		else
 		{
-			OreGinSoundCollection.ErrorSound().playSound(machineLocation);
+			OreGinSoundCollection.getErrorSound().playSound(machineLocation);
 			return ChatColor.RED + "Space above OreGin must be empty!";
 		}
 	}
@@ -191,9 +183,9 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Attempts to create an OreGin of given OreGin data
 	 */
-	public boolean AddOreGin(OreGin oreGin)
+	public boolean addOreGin(OreGin oreGin)
 	{
-		if(oreGin.getLocation().getBlock().getType().equals(Material.DISPENSER) && !OreGinExistsAt(oreGin.getLocation()))
+		if(oreGin.getLocation().getBlock().getType().equals(Material.DISPENSER) && !oreGinExistsAt(oreGin.getLocation()))
 		{
 			oreGins.add(oreGin);
 			return true;
@@ -207,7 +199,7 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Returns the OreGin with a matching Location, if any
 	 */
-	public OreGin GetOreGin(Location machineLocation)
+	public OreGin getOreGin(Location machineLocation)
 	{
 		for (OreGin oreGin : oreGins)
 		{
@@ -229,15 +221,15 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Returns whether an OreGin exists at the given Location
 	 */
-	public boolean OreGinExistsAt(Location machineLocation)
+	public boolean oreGinExistsAt(Location machineLocation)
 	{
-		return (GetOreGin(machineLocation) != null);
+		return (getOreGin(machineLocation) != null);
 	}
 	
 	/**
 	 * Returns whether item is an OreGin
 	 */
-	public boolean IsOreGin(ItemStack item)
+	public boolean isOreGin(ItemStack item)
 	{
 		boolean result = false;
 		
@@ -259,9 +251,9 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Returns whether location contains an OreGin light
 	 */
-	public boolean OreGinLightExistsAt(Location lightLocation)
+	public boolean oreGinLightExistsAt(Location lightLocation)
 	{
-		return (OreGinExistsAt(lightLocation.getBlock().getRelative(BlockFace.DOWN).getLocation())
+		return (oreGinExistsAt(lightLocation.getBlock().getRelative(BlockFace.DOWN).getLocation())
 				&& (lightLocation.getBlock().getType().equals(OreGinPlugin.LIGHT_OFF) 
 						|| lightLocation.getBlock().getType().equals(OreGinPlugin.LIGHT_ON)));
 	}

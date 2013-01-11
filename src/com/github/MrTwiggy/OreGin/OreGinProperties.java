@@ -52,7 +52,7 @@ public class OreGinProperties
 	/**
 	 * 'retrieve_valuables' public accessor
 	 */
-	public boolean GetRetrieveValuables()
+	public boolean getRetrieveValuables()
 	{
 		return retrieve_valuables;
 	}
@@ -60,7 +60,7 @@ public class OreGinProperties
 	/**
 	 * 'repair_material' public accessor
 	 */
-	public Material GetRepairMaterial()
+	public Material getRepairMaterial()
 	{
 		return repair_material;
 	}
@@ -68,7 +68,7 @@ public class OreGinProperties
 	/**
 	 * 'repair_amount' public accessor
 	 */
-	public int GetRepairAmount()
+	public int getRepairAmount()
 	{
 		return repair_amount;
 	}
@@ -76,7 +76,7 @@ public class OreGinProperties
 	/**
 	 * 'upgrade_amount' public accessor
 	 */
-	public int GetUpgradeAmount()
+	public int getUpgradeAmount()
 	{
 		return upgrade_amount;
 	}
@@ -84,7 +84,7 @@ public class OreGinProperties
 	/**
 	 * 'upgrade_material' public accessor
 	 */
-	public Material GetUpgradeMaterial()
+	public Material getUpgradeMaterial()
 	{
 		return upgrade_material;
 	}
@@ -92,7 +92,7 @@ public class OreGinProperties
 	/**
 	 * 'mining_delay' public accessor
 	 */
-	public int GetMiningDelay()
+	public int getMiningDelay()
 	{
 		return mining_delay;
 	}
@@ -100,7 +100,7 @@ public class OreGinProperties
 	/**
 	 * 'fuel_amount' public accessor
 	 */
-	public int GetFuelAmount()
+	public int getFuelAmount()
 	{
 		return fuel_amount;
 	}
@@ -108,7 +108,7 @@ public class OreGinProperties
 	/**
 	 * 'fuel_material' public accessor
 	 */
-	public Material GetFuelMaterial()
+	public Material getFuelMaterial()
 	{
 		return fuel_material;
 	}
@@ -116,7 +116,7 @@ public class OreGinProperties
 	/**
 	 * 'max_mining_distance' public accessor
 	 */
-	public int GetMaxMiningDistance()
+	public int getMaxMiningDistance()
 	{
 		return max_mining_distance;
 	}
@@ -124,7 +124,7 @@ public class OreGinProperties
 	/**
 	 * 'shaft_width' public accessor
 	 */
-	public int GetShaftWidth()
+	public int getShaftWidth()
 	{
 		return shaft_width;
 	}
@@ -132,7 +132,7 @@ public class OreGinProperties
 	/**
 	 * 'shaft_height' public accessor
 	 */
-	public int GetShaftHeight()
+	public int getShaftHeight()
 	{
 		return shaft_height;
 	}
@@ -140,7 +140,7 @@ public class OreGinProperties
 	/**
 	 * 'max_block_breaks' public accessor
 	 */
-	public int GetMaxBlockBreaks()
+	public int getMaxBlockBreaks()
 	{
 		return max_block_breaks;
 	}
