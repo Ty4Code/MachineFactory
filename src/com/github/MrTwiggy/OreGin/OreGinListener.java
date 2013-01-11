@@ -2,6 +2,9 @@ package com.github.MrTwiggy.OreGin;
 
 import static com.untamedears.citadel.Utility.isReinforced;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,11 +16,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.PistonBaseMaterial;
 
 /**
  * OreGinListener.java
@@ -204,5 +212,72 @@ public class OreGinListener implements Listener
 		event.setCancelled(oreGinMan.oreGinExistsAt(event.getBlock().getLocation()));
 	}
 
+	/**
+	 * Stop Piston from pushing an OreGin or it's light
+	 */
+	@EventHandler
+	public void oreGinPistonPush(BlockPistonExtendEvent event)
+	{
+		List<Block> movedBlocks = event.getBlocks();
+		
+		for (Block movedBlock : movedBlocks)
+		{
+			if (oreGinMan.oreGinExistsAt(movedBlock.getLocation())
+					|| oreGinMan.oreGinLightExistsAt(movedBlock.getLocation()))
+			{
+				event.setCancelled(true);
+			}
+		}
+	}
 
+	/**
+	 * Stop Piston from pulling an OreGin or it's light
+	 */
+	@EventHandler
+	public void oreGinPistonPull(BlockPistonRetractEvent event)
+	{
+		MaterialData materialData = event.getBlock().getState().getData();
+		BlockFace blockFace;
+		Block movedBlock;
+
+		if (materialData instanceof PistonBaseMaterial) 
+		{
+			blockFace = ((PistonBaseMaterial) materialData).getFacing();
+			movedBlock = event.getBlock().getRelative(blockFace, 2);
+			
+			if (event.isSticky() && movedBlock != null)
+			{
+				if (oreGinMan.oreGinExistsAt(movedBlock.getLocation())
+						|| oreGinMan.oreGinLightExistsAt(movedBlock.getLocation()))
+				{
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Stop entities from exploding/destroying OreGin
+	 */
+	@EventHandler
+	public void oreGinExploded(EntityExplodeEvent event)
+	{
+		List<Block> destroyedBlocks = event.blockList();
+		List<Block> cancelBlocks = new ArrayList<Block>();
+		
+		for (Block destroyedBlock : destroyedBlocks)
+		{
+			if (oreGinMan.oreGinExistsAt(destroyedBlock.getLocation())
+					|| oreGinMan.oreGinLightExistsAt(destroyedBlock.getLocation()))
+			{
+				destroyedBlock.getDrops().clear();
+				cancelBlocks.add(destroyedBlock);
+			}
+		}
+		
+		for (Block cancelBlock : cancelBlocks)
+		{
+			event.blockList().remove(cancelBlock);
+		}
+	}
 }
