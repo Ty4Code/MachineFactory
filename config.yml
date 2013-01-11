@@ -2,6 +2,7 @@ general:
   update_cycle: 5
   maximum_block_breaks_per_cycle: 500
   save_cycle: 10
+  citadel_enabled: true
   max_tiers: 7
   oregin_upgrade_wand: YELLOW_FLOWER
   oregin_activation_wand: RED_ROSE

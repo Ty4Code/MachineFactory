@@ -338,7 +338,8 @@ public class OreGin
 		}
 		else
 		{
-			if (!isReinforced(block))
+			if ((OreGinPlugin.CITADEL_ENABLED && !isReinforced(block))
+					|| !OreGinPlugin.CITADEL_ENABLED)
 			{
 				if (oreGinProperties.getRetrieveValuables() && OreGinPlugin.VALUABLES.contains(blockType))
 				{

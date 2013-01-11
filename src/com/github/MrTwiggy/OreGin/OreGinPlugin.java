@@ -30,9 +30,12 @@ public class OreGinPlugin extends JavaPlugin
 	public static final String ORE_GIN_SAVES_DIRECTORY = "OreGinSaves";
 	public static final int TICKS_PER_SECOND = 20; //The number of ticks per second
 	
+	public static final String CITADEL_NAME = "Citadel"; //The plugin name for 'Citadel'
+	
 	public static int UPDATE_CYCLE; //Update time in ticks
 	public static int MAXIMUM_BLOCK_BREAKS_PER_CYCLE; //The maximum number of block breaks per update cycle.
 	public static int SAVE_CYCLE; //The time between periodic saves in minutes
+	public static boolean CITADEL_ENABLED; //Whether the plugin 'Citadel' is enabled on this server
 	public static Material OREGIN_UPGRADE_WAND; //The wand used for creating and upgrading OreGins
 	public static Material OREGIN_ACTIVATION_WAND; //The wand used for powering OreGins
 	public static Material OREGIN_REPAIR_WAND; //The wand used for repairing OreGins
@@ -52,18 +55,26 @@ public class OreGinPlugin extends JavaPlugin
 	 */
 	public void onEnable()
 	{
-		getLogger().info(PLUGIN_NAME + " " + VERSION + " has been enabled!");
-		
-		getConfig().options().copyDefaults(true);
-		Ore_Gin_Properties = new HashMap<Integer,OreGinProperties>();
 		initializeOreGinProperties();
 		
-		oreGinMan = new OreGinManager(this);
-		oreGinListener = new OreGinListener(oreGinMan);
-		getServer().getPluginManager().registerEvents(oreGinListener, this);
-		
-		load(oreGinMan, getOreGinSavesFile());
-		periodicSaving();
+		if (properPluginsLoaded())
+		{
+			getLogger().info(PLUGIN_NAME + " " + VERSION + " has been enabled!");
+			
+			getConfig().options().copyDefaults(true);
+			
+			oreGinMan = new OreGinManager(this);
+			oreGinListener = new OreGinListener(oreGinMan);
+			getServer().getPluginManager().registerEvents(oreGinListener, this);
+			
+			load(oreGinMan, getOreGinSavesFile());
+			periodicSaving();
+		}
+		else
+		{
+			OreGinPlugin.sendConsoleMessage("The Citadel config value is not correct for loaded plugins! Disabling OreGin now!");
+			getServer().getPluginManager().disablePlugin(this);
+		}
 	}
 	
 	/**
@@ -71,7 +82,9 @@ public class OreGinPlugin extends JavaPlugin
 	 */
 	public void onDisable()
 	{
-		save(oreGinMan, getOreGinSavesFile());
+		if (oreGinMan != null)
+			save(oreGinMan, getOreGinSavesFile());
+		
 		getLogger().info(PLUGIN_NAME + " " + VERSION + " has been disabled!");
 	}
 	
@@ -85,9 +98,12 @@ public class OreGinPlugin extends JavaPlugin
 	@SuppressWarnings("unchecked")
 	public void initializeOreGinProperties()
 	{
+		Ore_Gin_Properties = new HashMap<Integer,OreGinProperties>();
+		
 		//Load general config values
 		OreGinPlugin.UPDATE_CYCLE = getConfig().getInt("general.update_cycle");
 		OreGinPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE = getConfig().getInt("general.maximum_block_breaks_per_cycle");
+		OreGinPlugin.CITADEL_ENABLED = getConfig().getBoolean("general.citadel_enabled");
 		OreGinPlugin.SAVE_CYCLE = getConfig().getInt("general.save_cycle");
 		OreGinPlugin.OREGIN_UPGRADE_WAND = Material.valueOf(getConfig().getString("general.oregin_upgrade_wand"));
 		OreGinPlugin.OREGIN_ACTIVATION_WAND = Material.valueOf(getConfig().getString("general.oregin_activation_wand"));
@@ -167,6 +183,14 @@ public class OreGinPlugin extends JavaPlugin
 		return "oregin_tier_properties.tier" + tierLevel + ".";
 	}
 	
+	/**
+	 * Returns whether the proper plugins are loaded based on config values
+	 */
+	public boolean properPluginsLoaded()
+	{
+		return ( (getServer().getPluginManager().getPlugin(CITADEL_NAME) != null && OreGinPlugin.CITADEL_ENABLED)
+				|| (getServer().getPluginManager().getPlugin(CITADEL_NAME) == null && !OreGinPlugin.CITADEL_ENABLED));
+	}
 	
 	/*
 	 ----------SAVING/LOADING LOGIC--------

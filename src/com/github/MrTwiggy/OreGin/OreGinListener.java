@@ -105,18 +105,15 @@ public class OreGinListener implements Listener
 				if (oreGinMan.oreGinLightExistsAt(destroyed.getLocation()))
 					oreGin = oreGinMan.getOreGin(destroyed.getRelative(BlockFace.DOWN).getLocation());
 				
-				if (!isReinforced(oreGin.getLocation().getBlock()) && 
-					!isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))
+				event.setCancelled(true);
+				
+				if ( (OreGinPlugin.CITADEL_ENABLED && !isReinforced(oreGin.getLocation().getBlock()) 
+						&& !isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))
+					|| !OreGinPlugin.CITADEL_ENABLED)
 				{
-					event.setCancelled(true);
 					ItemStack dropItem = new ItemStack(Material.DISPENSER, 1);
 					oreGin.destroyOreGin(dropItem);
 					oreGinMan.removeOreGin(oreGin);
-				}
-				else if (isReinforced(oreGin.getLocation().getBlock()) ||
-					isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))
-				{
-					event.setCancelled(true);
 				}
 			}
 		}
