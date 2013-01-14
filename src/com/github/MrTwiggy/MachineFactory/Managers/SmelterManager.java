@@ -23,7 +23,7 @@ import com.github.MrTwiggy.MachineFactory.Machines.Smelter;
 public class SmelterManager implements Manager
 {
 
-	private List<Smelter> smelters; //List of current OreGins
+	private List<Smelter> smelters; //List of current OreGins -
 	private MachineFactoryPlugin plugin; //OreGinPlugin object
 	
 	/**
