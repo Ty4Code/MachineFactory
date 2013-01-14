@@ -1,7 +1,8 @@
-package com.github.MrTwiggy.OreGin;
+package com.github.MrTwiggy.MachineFactory.Listeners;
 
 import static com.untamedears.citadel.Utility.isReinforced;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dispenser;
+import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +28,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
+
+import com.github.MrTwiggy.MachineFactory.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
+import com.github.MrTwiggy.MachineFactory.Machines.OreGin;
+import com.github.MrTwiggy.MachineFactory.Machines.Smelter;
+import com.github.MrTwiggy.MachineFactory.Managers.OreGinManager;
+import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
 
 /**
  * OreGinListener.java
@@ -49,45 +58,59 @@ public class OreGinListener implements Listener
 	
 	/**
 	 * Checks to see if an OreGin can be created
+	 * @throws IOException 
 	 */
 	@EventHandler
-	public void oreGinInteraction(PlayerInteractEvent event)
+	public void oreGinInteraction(PlayerInteractEvent event) throws IOException
 	{
 		Block clicked = event.getClickedBlock();
 		Player creator = event.getPlayer();
+	
+		if (clicked != null && (clicked.getState() instanceof Furnace))
+		{
+			creator.sendMessage("Verified: " + Smelter.verifySmelter(clicked.getLocation()));
+		}
 		
 		if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
 		{
 			if (clicked.getState() instanceof Dispenser)
 			{
 				//Create and/or upgrade OreGin
-				if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_UPGRADE_WAND))
+				if (creator.getItemInHand().getType().equals(MachineFactoryPlugin.OREGIN_UPGRADE_WAND))
 				{
 					
-					if (oreGinMan.oreGinExistsAt(clicked.getLocation()))
+					if (oreGinMan.machineExistsAt(clicked.getLocation()))
 					{
-						OreGin oreGin = oreGinMan.getOreGin(clicked.getLocation());
-						creator.sendMessage(oreGin.upgrade());
+						OreGin oreGin = (OreGin) oreGinMan.getMachine(clicked.getLocation());
+						
+						//Send player success/failure message
+						InteractionResponse.messagePlayerResult(creator, oreGin.upgrade());
 					}
 					else
 					{
-						creator.sendMessage(oreGinMan.createOreGin(clicked.getLocation()));
+						//Send player success/failure message
+						InteractionResponse.messagePlayerResult(creator, 
+								oreGinMan.createMachine(clicked.getLocation()));
 					}
 				} //Activate or de-activate OreGin
-				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_ACTIVATION_WAND))
+				else if (creator.getItemInHand().getType().equals(MachineFactoryPlugin.OREGIN_ACTIVATION_WAND))
 				{
-					if (oreGinMan.oreGinExistsAt(clicked.getLocation()))
+					if (oreGinMan.machineExistsAt(clicked.getLocation()))
 					{
-						OreGin oreGin = oreGinMan.getOreGin(clicked.getLocation());
-						creator.sendMessage(oreGin.togglePower());
+						OreGin oreGin = (OreGin) oreGinMan.getMachine(clicked.getLocation());
+						
+						//Send player success/failure message
+						InteractionResponse.messagePlayerResult(creator, oreGin.togglePower());
 					}
 				} //Repair OreGin
-				else if (creator.getItemInHand().getType().equals(OreGinPlugin.OREGIN_REPAIR_WAND))
+				else if (creator.getItemInHand().getType().equals(MachineFactoryPlugin.OREGIN_REPAIR_WAND))
 				{
-					if (oreGinMan.oreGinExistsAt(clicked.getLocation()))
+					if (oreGinMan.machineExistsAt(clicked.getLocation()))
 					{
-						OreGin oreGin = oreGinMan.getOreGin(clicked.getLocation());
-						creator.sendMessage(oreGin.repair());
+						OreGin oreGin = (OreGin) oreGinMan.getMachine(clicked.getLocation());
+						
+						//Send player success/failure message
+						InteractionResponse.messagePlayerResult(creator, oreGin.repair());
 					}
 				}
 			}
@@ -104,24 +127,24 @@ public class OreGinListener implements Listener
 	{
 		Block destroyed = event.getBlock();
 		
-		if ((destroyed.getState() instanceof Dispenser) || destroyed.getType().equals(OreGinPlugin.LIGHT_ON)
-				|| destroyed.getType().equals(OreGinPlugin.LIGHT_OFF))
+		if ((destroyed.getState() instanceof Dispenser) || destroyed.getType().equals(MachineFactoryPlugin.LIGHT_ON)
+				|| destroyed.getType().equals(MachineFactoryPlugin.LIGHT_OFF))
 		{
-			if (oreGinMan.oreGinExistsAt(destroyed.getLocation()) || oreGinMan.oreGinLightExistsAt(destroyed.getLocation()))
+			if (oreGinMan.machineExistsAt(destroyed.getLocation()) || oreGinMan.oreGinLightExistsAt(destroyed.getLocation()))
 			{
-				OreGin oreGin = oreGinMan.getOreGin(destroyed.getLocation());
+				OreGin oreGin = (OreGin) oreGinMan.getMachine(destroyed.getLocation());
 				if (oreGinMan.oreGinLightExistsAt(destroyed.getLocation()))
-					oreGin = oreGinMan.getOreGin(destroyed.getRelative(BlockFace.DOWN).getLocation());
+					oreGin = (OreGin) oreGinMan.getMachine(destroyed.getRelative(BlockFace.DOWN).getLocation());
 				
 				event.setCancelled(true);
 				
-				if ( (OreGinPlugin.CITADEL_ENABLED && !isReinforced(oreGin.getLocation().getBlock()) 
+				if ( (MachineFactoryPlugin.CITADEL_ENABLED && !isReinforced(oreGin.getLocation().getBlock()) 
 						&& !isReinforced(oreGin.getLocation().getBlock().getRelative(BlockFace.UP)))
-					|| !OreGinPlugin.CITADEL_ENABLED)
+					|| !MachineFactoryPlugin.CITADEL_ENABLED)
 				{
 					ItemStack dropItem = new ItemStack(Material.DISPENSER, 1);
-					oreGin.destroyOreGin(dropItem);
-					oreGinMan.removeOreGin(oreGin);
+					oreGin.destroy(dropItem);
+					oreGinMan.removeMachine(oreGin);
 				}
 			}
 		}
@@ -141,7 +164,7 @@ public class OreGinListener implements Listener
 			{
 				OreGin oreGin = new OreGin(placed.getLocation(), OreGin.getTierLevel(event.getItemInHand().getItemMeta().getDisplayName()), 
 						OreGin.getBlockBreaksFromLore(event.getItemInHand().getItemMeta().getLore()), oreGinMan);
-				oreGinMan.addOreGin(oreGin);
+				oreGinMan.addMachine(oreGin);
 				event.getPlayer().sendMessage(ChatColor.GREEN + "An OreGin of tier level " + oreGin.getTierLevel() + " was placed!");
 			}
 			else
@@ -187,15 +210,15 @@ public class OreGinListener implements Listener
 	@EventHandler
 	public void keepLightsStable(BlockRedstoneEvent event)
 	{
-		if (event.getBlock().getType().equals(OreGinPlugin.LIGHT_ON) || event.getBlock().getType().equals(OreGinPlugin.LIGHT_OFF))
+		if (event.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_ON) || event.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_OFF))
 		{
 			if (oreGinMan.oreGinLightExistsAt(event.getBlock().getLocation()))
 			{
-				if (oreGinMan.getOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).getMining())
+				if (((OreGin)oreGinMan.getMachine(event.getBlock().getRelative(BlockFace.DOWN).getLocation())).getMining())
 				{
 					event.setNewCurrent(1);
 				}
-				else if (!oreGinMan.getOreGin(event.getBlock().getRelative(BlockFace.DOWN).getLocation()).getBroken())
+				else if (!((OreGin)oreGinMan.getMachine(event.getBlock().getRelative(BlockFace.DOWN).getLocation())).getBroken())
 				{
 					event.setNewCurrent(0);
 				}
@@ -209,7 +232,7 @@ public class OreGinListener implements Listener
 	@EventHandler
 	public void oreGinDispense(BlockDispenseEvent event)
 	{
-		event.setCancelled(oreGinMan.oreGinExistsAt(event.getBlock().getLocation()));
+		event.setCancelled(oreGinMan.machineExistsAt(event.getBlock().getLocation()));
 	}
 
 	/**
@@ -222,7 +245,7 @@ public class OreGinListener implements Listener
 		
 		for (Block movedBlock : movedBlocks)
 		{
-			if (oreGinMan.oreGinExistsAt(movedBlock.getLocation())
+			if (oreGinMan.machineExistsAt(movedBlock.getLocation())
 					|| oreGinMan.oreGinLightExistsAt(movedBlock.getLocation()))
 			{
 				event.setCancelled(true);
@@ -247,7 +270,7 @@ public class OreGinListener implements Listener
 			
 			if (event.isSticky() && movedBlock != null)
 			{
-				if (oreGinMan.oreGinExistsAt(movedBlock.getLocation())
+				if (oreGinMan.machineExistsAt(movedBlock.getLocation())
 						|| oreGinMan.oreGinLightExistsAt(movedBlock.getLocation()))
 				{
 					event.setCancelled(true);
@@ -267,7 +290,7 @@ public class OreGinListener implements Listener
 		
 		for (Block destroyedBlock : destroyedBlocks)
 		{
-			if (oreGinMan.oreGinExistsAt(destroyedBlock.getLocation())
+			if (oreGinMan.machineExistsAt(destroyedBlock.getLocation())
 					|| oreGinMan.oreGinLightExistsAt(destroyedBlock.getLocation()))
 			{
 				destroyedBlock.getDrops().clear();

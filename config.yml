@@ -1,8 +1,12 @@
 general:
+  oregin_enabled: true
+  smelter_enabled: false
+  citadel_enabled: true
+  save_cycle: 10
+  
+oregin_general:
   update_cycle: 5
   maximum_block_breaks_per_cycle: 500
-  save_cycle: 10
-  citadel_enabled: true
   max_tiers: 7
   oregin_upgrade_wand: YELLOW_FLOWER
   oregin_activation_wand: RED_ROSE
@@ -28,103 +32,95 @@ general:
   indestructible:
   - BEDROCK
   - OBSIDIAN
-  
-oregin_tier_properties:
-
-  tier1:
-    max_mining_distance: 20
-    max_block_breaks: 160
-    mining_delay: 40
-    retrieve_valuables: false
-    fuel_type: REDSTONE
-    fuel_amount: 1
-    upgrade_material: IRON_BLOCK
-    upgrade_amount: 5
-    repair_material: IRON_BLOCK
-    repair_amount: 2
-    shaft_width: 1
-    shaft_height: 1
-    
-  tier2:
-    max_mining_distance: 35
-    max_block_breaks: 300
-    mining_delay: 30
-    retrieve_valuables: false
-    fuel_type: REDSTONE
-    fuel_amount: 2
-    upgrade_material: IRON_BLOCK
-    upgrade_amount: 20
-    repair_material: IRON_BLOCK
-    repair_amount: 8
-    shaft_width: 3
-    shaft_height: 1
-    
-  tier3:
-    max_mining_distance: 50
-    max_block_breaks: 1000
-    mining_delay: 20
-    retrieve_valuables: false
-    fuel_type: COAL
-    fuel_amount: 3
-    upgrade_material: IRON_BLOCK
-    upgrade_amount: 48
-    repair_material: IRON_BLOCK
-    repair_amount: 20
-    shaft_width: 3
-    shaft_height: 3
-    
-  tier4:
-    max_mining_distance: 75
-    max_block_breaks: 1875
-    mining_delay: 15
-    retrieve_valuables: false
-    fuel_type: COAL
-    fuel_amount: 9
-    upgrade_material: GOLD_BLOCK
-    upgrade_amount: 64
-    repair_material: GOLD_BLOCK
-    repair_amount: 28
-    shaft_width: 5
-    shaft_height: 5
-    
-  tier5:
-    max_mining_distance: 100
-    max_block_breaks: 3000
-    mining_delay: 10
-    retrieve_valuables: true
-    fuel_type: IRON_INGOT
-    fuel_amount: 5
-    upgrade_material: DIAMOND_BLOCK
-    upgrade_amount: 32
-    repair_material: DIAMOND_BLOCK
-    repair_amount: 14
-    shaft_width: 6
-    shaft_height: 6
-    
-  tier6:
-    max_mining_distance: 125
-    max_block_breaks: 5000
-    mining_delay: 5
-    retrieve_valuables: true
-    fuel_type: GOLD_INGOT
-    fuel_amount: 5
-    upgrade_material: DIAMOND_BLOCK
-    upgrade_amount: 64
-    repair_material: DIAMOND_BLOCK
-    repair_amount: 30
-    shaft_width: 8
-    shaft_height: 8
-    
-  tier7:
-    max_mining_distance: 150
-    max_block_breaks: 10000
-    mining_delay: 5
-    retrieve_valuables: true
-    fuel_type: DIAMOND
-    fuel_amount: 3
-    upgrade_material: DIAMOND_BLOCK
-    upgrade_amount: 128
-    repair_material: DIAMOND_BLOCK
-    repair_amount: 60
-    shaft_width: 11
-    shaft_height: 11
+  oregin_tier_properties:
+    tier1:
+      max_mining_distance: 20
+      max_block_breaks: 160
+      mining_delay: 40
+      retrieve_valuables: false
+      fuel_type: REDSTONE
+      fuel_amount: 1
+      upgrade_material: IRON_BLOCK
+      upgrade_amount: 5
+      repair_material: IRON_BLOCK
+      repair_amount: 2
+      shaft_width: 1
+      shaft_height: 1
+    tier2:
+      max_mining_distance: 35
+      max_block_breaks: 300
+      mining_delay: 30
+      retrieve_valuables: false
+      fuel_type: REDSTONE
+      fuel_amount: 2
+      upgrade_material: IRON_BLOCK
+      upgrade_amount: 20
+      repair_material: IRON_BLOCK
+      repair_amount: 8
+      shaft_width: 3
+      shaft_height: 1   
+    tier3:
+      max_mining_distance: 50
+      max_block_breaks: 1000
+      mining_delay: 20
+      retrieve_valuables: false
+      fuel_type: COAL
+      fuel_amount: 3
+      upgrade_material: IRON_BLOCK
+      upgrade_amount: 48
+      repair_material: IRON_BLOCK
+      repair_amount: 20
+      shaft_width: 3
+      shaft_height: 3 
+    tier4:
+      max_mining_distance: 75
+      max_block_breaks: 1875
+      mining_delay: 15
+      retrieve_valuables: false
+      fuel_type: COAL
+      fuel_amount: 9
+      upgrade_material: GOLD_BLOCK
+      upgrade_amount: 64
+      repair_material: GOLD_BLOCK
+      repair_amount: 28
+      shaft_width: 5
+      shaft_height: 5
+    tier5:
+      max_mining_distance: 100
+      max_block_breaks: 3000
+      mining_delay: 10
+      retrieve_valuables: true
+      fuel_type: IRON_INGOT
+      fuel_amount: 5
+      upgrade_material: DIAMOND_BLOCK
+      upgrade_amount: 32
+      repair_material: DIAMOND_BLOCK
+      repair_amount: 14
+      shaft_width: 6
+      shaft_height: 6
+    tier6:
+      max_mining_distance: 125
+      max_block_breaks: 5000
+      mining_delay: 5
+      retrieve_valuables: true
+      fuel_type: GOLD_INGOT
+      fuel_amount: 5
+      upgrade_material: DIAMOND_BLOCK
+      upgrade_amount: 64
+      repair_material: DIAMOND_BLOCK
+      repair_amount: 30
+      shaft_width: 8
+      shaft_height: 8
+    tier7:
+      max_mining_distance: 150
+      max_block_breaks: 10000
+      mining_delay: 5
+      retrieve_valuables: true
+      fuel_type: DIAMOND
+      fuel_amount: 3
+      upgrade_material: DIAMOND_BLOCK
+      upgrade_amount: 128
+      repair_material: DIAMOND_BLOCK
+      repair_amount: 60
+      shaft_width: 11
+      shaft_height: 11

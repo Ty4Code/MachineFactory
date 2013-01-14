@@ -1,4 +1,4 @@
-package com.github.MrTwiggy.OreGin;
+package com.github.MrTwiggy.MachineFactory;
 
 import java.util.List;
 
@@ -9,13 +9,13 @@ import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
- * OreGinSound.java
- * Purpose: An OreGin related sound
+ * Sound.java
+ * Purpose: An object for storing sounds
  *
  * @author MrTwiggy
  * @version 0.1 1/08/13
  */
-public class OreGinSound 
+public class Sound 
 {
 	public final int SOUND_PLAY_DISTANCE = 20; //The maximum distance for sound packet to be sent to player
 	
@@ -26,7 +26,7 @@ public class OreGinSound
 	/**
 	 * Constructor
 	 */
-	public OreGinSound(List<String> sounds, float volume, float pitch)
+	public Sound(List<String> sounds, float volume, float pitch)
 	{
 		this.sounds = sounds;
 		this.volume = volume;
@@ -36,7 +36,7 @@ public class OreGinSound
 	/**
 	 * Constructor
 	 */
-	public OreGinSound(List<String> sounds)
+	public Sound(List<String> sounds)
 	{
 		this.sounds = sounds;
 		this.volume = 1.0f;

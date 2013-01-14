@@ -1,4 +1,4 @@
-package com.github.MrTwiggy.OreGin;
+package com.github.MrTwiggy.MachineFactory;
 
 import org.bukkit.Material;
 

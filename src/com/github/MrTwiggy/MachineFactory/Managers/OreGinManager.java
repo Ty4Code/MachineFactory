@@ -1,4 +1,4 @@
-package com.github.MrTwiggy.OreGin;
+package com.github.MrTwiggy.MachineFactory.Managers;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,11 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
+
+import com.github.MrTwiggy.MachineFactory.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
+import com.github.MrTwiggy.MachineFactory.OreGinProperties;
+import com.github.MrTwiggy.MachineFactory.InteractionResponse.InteractionResult;
+import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
+import com.github.MrTwiggy.MachineFactory.Interfaces.Manager;
+import com.github.MrTwiggy.MachineFactory.Machines.OreGin;
+import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
 
 
 /**
@@ -26,29 +34,29 @@ import org.bukkit.inventory.ItemStack;
  * @author MrTwiggy
  * @version 0.1 1/08/13
  */
-public class OreGinManager implements ManagerInterface
+public class OreGinManager implements Manager
 {
 	
 	private List<OreGin> oreGins; //List of current OreGins
-	private OreGinPlugin plugin; //OreGinPlugin object
+	private MachineFactoryPlugin plugin; //OreGinPlugin object
 	
 	private int blockBreaksDuringCycle = 0;//The number of blocks broken during the current cycle.
 	
 	/**
 	 * Constructor
 	 */
-	public OreGinManager(OreGinPlugin plugin)
+	public OreGinManager(MachineFactoryPlugin plugin)
 	{
 		this.plugin = plugin;
 		oreGins = new ArrayList<OreGin>();
 		
-		updateOreGins();
+		updateMachines();
 	}
 
 	/**
 	 * Updates all the active OreGins
 	 */
-	public void updateOreGins()
+	public void updateMachines()
 	{
 		plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable()
 		{
@@ -61,7 +69,7 @@ public class OreGinManager implements ManagerInterface
 					oreGin.update();
 				}
 		    }
-		}, 0L, OreGinPlugin.UPDATE_CYCLE);
+		}, 0L, MachineFactoryPlugin.UPDATE_CYCLE);
 	}
 	
 	/**
@@ -103,10 +111,10 @@ public class OreGinManager implements ManagerInterface
 			boolean broken = Boolean.parseBoolean(parts[8]);
 			
 			OreGin oreGin = new OreGin(blockBreaks, tierLevel, mining, broken, miningDistance, oreGinLocation, this);
-			addOreGin(oreGin);
+			addMachine(oreGin);
 		}
 
-		OreGinPlugin.sendConsoleMessage("Successfully loaded " + oreGins.size() + " Ore Gins!");
+		MachineFactoryPlugin.sendConsoleMessage("Successfully loaded " + oreGins.size() + " Ore Gins!");
 		fileInputStream.close();
 	}
 
@@ -142,7 +150,7 @@ public class OreGinManager implements ManagerInterface
             
         }
 		
-		OreGinPlugin.sendConsoleMessage("Successfully saved " + oreGins.size() + " Ore Gins!");
+		MachineFactoryPlugin.sendConsoleMessage("Successfully saved " + oreGins.size() + " Ore Gins!");
 
 		bufferedWriter.flush();
 		fileOutputStream.close();
@@ -151,41 +159,49 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Attempts to create an OreGin at the location and returns result message
 	 */
-	public String createOreGin(Location machineLocation)
+	public InteractionResponse createMachine(Location machineLocation)
 	{
-		OreGinProperties desiredTierProperties = OreGinPlugin.Ore_Gin_Properties.get(1);
+		OreGinProperties desiredTierProperties = MachineFactoryPlugin.Ore_Gin_Properties.get(1);
 		Material upgradeMaterial = desiredTierProperties.getUpgradeMaterial();
 		
 		if (OreGin.isValidOreGinCreationLocation(machineLocation))
 		{
-			if (!oreGinExistsAt(machineLocation) && OreGin.isValidUpgrade(machineLocation, 1))
+			if (!machineExistsAt(machineLocation) && OreGin.isValidUpgrade(machineLocation, 1))
 			{
 				OreGin oreGin = new OreGin(machineLocation, this);
-				addOreGin(oreGin);
+				addMachine(oreGin);
 				oreGin.removeUpgradeMaterial(1);
 				plugin.getLogger().info("New OreGin created!");
-				return ChatColor.GREEN + "Successfully created OreGin!";
+				
+				return new InteractionResponse(InteractionResult.SUCCESS,
+						"Successfully created OreGin!");
 			}
 			else
 			{
 				OreGinSoundCollection.getErrorSound().playSound(machineLocation);
-				return ChatColor.RED + "Missing creation materials! " + OreGin.getRequiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
-						upgradeMaterial, machineLocation);	
+				
+				return new InteractionResponse(InteractionResult.FAILURE,
+						"Missing creation materials! " 
+						+ OreGin.getRequiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
+						upgradeMaterial, machineLocation));
 			}
 		}
 		else
 		{
 			OreGinSoundCollection.getErrorSound().playSound(machineLocation);
-			return ChatColor.RED + "Space above OreGin must be empty!";
+			
+			return new InteractionResponse(InteractionResult.FAILURE,
+					"Space above OreGin must be empty!");
 		}
 	}
 	
 	/**
 	 * Attempts to create an OreGin of given OreGin data
 	 */
-	public boolean addOreGin(OreGin oreGin)
+	public boolean addMachine(Machine machine)
 	{
-		if(oreGin.getLocation().getBlock().getType().equals(Material.DISPENSER) && !oreGinExistsAt(oreGin.getLocation()))
+		OreGin oreGin = (OreGin)machine;
+		if(oreGin.getLocation().getBlock().getType().equals(Material.DISPENSER) && !machineExistsAt(oreGin.getLocation()))
 		{
 			oreGins.add(oreGin);
 			return true;
@@ -199,7 +215,7 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Returns the OreGin with a matching Location, if any
 	 */
-	public OreGin getOreGin(Location machineLocation)
+	public Machine getMachine(Location machineLocation)
 	{
 		for (OreGin oreGin : oreGins)
 		{
@@ -213,17 +229,17 @@ public class OreGinManager implements ManagerInterface
 	/**
 	 * Removes a specific OreGin from the list
 	 */
-	public void removeOreGin(OreGin oreGin)
+	public void removeMachine(Machine machine)
 	{
-		oreGins.remove(oreGin);
+		oreGins.remove((OreGin)machine);
 	}
 	
 	/**
 	 * Returns whether an OreGin exists at the given Location
 	 */
-	public boolean oreGinExistsAt(Location machineLocation)
+	public boolean machineExistsAt(Location machineLocation)
 	{
-		return (getOreGin(machineLocation) != null);
+		return (getMachine(machineLocation) != null);
 	}
 	
 	/**
@@ -236,7 +252,7 @@ public class OreGinManager implements ManagerInterface
 		if (item.getItemMeta().getDisplayName() == null)
 			return false;
 		
-		for(int i = 1; i <= OreGinPlugin.MAX_TIERS; i++)
+		for(int i = 1; i <= MachineFactoryPlugin.MAX_TIERS; i++)
 		{
 			if (item.getItemMeta().getDisplayName().equalsIgnoreCase("T" + i + " OreGin"))
 			{
@@ -253,9 +269,9 @@ public class OreGinManager implements ManagerInterface
 	 */
 	public boolean oreGinLightExistsAt(Location lightLocation)
 	{
-		return (oreGinExistsAt(lightLocation.getBlock().getRelative(BlockFace.DOWN).getLocation())
-				&& (lightLocation.getBlock().getType().equals(OreGinPlugin.LIGHT_OFF) 
-						|| lightLocation.getBlock().getType().equals(OreGinPlugin.LIGHT_ON)));
+		return (machineExistsAt(lightLocation.getBlock().getRelative(BlockFace.DOWN).getLocation())
+				&& (lightLocation.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_OFF) 
+						|| lightLocation.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_ON)));
 	}
-	
+
 }

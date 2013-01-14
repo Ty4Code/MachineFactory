@@ -1,7 +1,9 @@
-package com.github.MrTwiggy.OreGin;
+package com.github.MrTwiggy.MachineFactory.SoundCollections;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.MrTwiggy.MachineFactory.Sound;
 
 /**
  * OreGinSoundCollection.java
@@ -15,7 +17,7 @@ public class OreGinSoundCollection
 	/**
 	 * Power On Sound
 	 */
-	public static OreGinSound getPowerOnSound()
+	public static Sound getPowerOnSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("mob.slime.small3");
@@ -23,13 +25,13 @@ public class OreGinSoundCollection
 		soundNames.add("mob.skeleton.hurt2");
 		soundNames.add("mob.silverfish.kill");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Power Off Sound
 	 */
-	public static OreGinSound getPowerOffSound()
+	public static Sound getPowerOffSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("note.bass");
@@ -37,52 +39,52 @@ public class OreGinSoundCollection
 		soundNames.add("mob.blaze.hit2");
 		soundNames.add("random.anvil_land");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Creation Sound
 	 */
-	public static OreGinSound getCreationSound()
+	public static Sound getCreationSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("fireworks.blast");
 		soundNames.add("random.burp");
 		soundNames.add("mob.irongolem.death");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Destruction Sound
 	 */
-	public static OreGinSound getDestructionSound()
+	public static Sound getDestructionSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("mob.skeleton.death");
 		soundNames.add("mob.slime.big3");
 		soundNames.add("mob.silverfish.say4");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Upgrade Sound
 	 */
-	public static OreGinSound getUpgradeSound()
+	public static Sound getUpgradeSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.levelup");
 		soundNames.add("fire.ignite");
 		soundNames.add("fire.fire");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Mining Sound
 	 */
-	public static OreGinSound getMiningSound()
+	public static Sound getMiningSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.break");
@@ -90,24 +92,24 @@ public class OreGinSoundCollection
 		soundNames.add("tile.piston.out");
 		soundNames.add("mob.wolf.shake");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Broken Sound
 	 */
-	public static OreGinSound getBrokenSound()
+	public static Sound getBrokenSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("note.pling");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Placement Sound
 	 */
-	public static OreGinSound getPlacementSound()
+	public static Sound getPlacementSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.anvil_land");
@@ -115,28 +117,28 @@ public class OreGinSoundCollection
 		soundNames.add("random.click");
 		soundNames.add("random.eat1");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 
 	/**
 	 * Repair Sound
 	 */
-	public static OreGinSound getRepairSound()
+	public static Sound getRepairSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.eat1");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 	
 	/**
 	 * Error Sound
 	 */
-	public static OreGinSound getErrorSound()
+	public static Sound getErrorSound()
 	{
 		List<String> soundNames = new ArrayList<String>();
 		soundNames.add("random.anvil_land");
 		
-		return new OreGinSound(soundNames);
+		return new Sound(soundNames);
 	}
 }
