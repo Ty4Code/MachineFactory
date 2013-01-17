@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.bukkit.Location;
 
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 
 
 /**
@@ -41,7 +41,7 @@ public interface Manager
 	/**
 	 * Creates a machine from an existing machine data object
 	 */
-	public boolean addMachine(Machine machine);
+	public InteractionResponse addMachine(Machine machine);
 
 	/**
 	 * Returns the machine (if any exists) at the given location from this manager
@@ -57,5 +57,10 @@ public interface Manager
 	 * Removes the given machine from the object list
 	 */
 	public void removeMachine(Machine machine);
+	
+	/**
+	 * Returns the saves file name for this manager
+	 */
+	public String getSavesFileName();
 	
 }

@@ -17,14 +17,14 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
-import com.github.MrTwiggy.MachineFactory.OreGinProperties;
-import com.github.MrTwiggy.MachineFactory.InteractionResponse.InteractionResult;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Manager;
 import com.github.MrTwiggy.MachineFactory.Machines.OreGin;
+import com.github.MrTwiggy.MachineFactory.Properties.OreGinProperties;
 import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.InteractionResult;
 
 
 /**
@@ -69,7 +69,7 @@ public class OreGinManager implements Manager
 					oreGin.update();
 				}
 		    }
-		}, 0L, MachineFactoryPlugin.UPDATE_CYCLE);
+		}, 0L, MachineFactoryPlugin.OREGIN_UPDATE_CYCLE);
 	}
 	
 	/**
@@ -198,17 +198,17 @@ public class OreGinManager implements Manager
 	/**
 	 * Attempts to create an OreGin of given OreGin data
 	 */
-	public boolean addMachine(Machine machine)
+	public InteractionResponse addMachine(Machine machine)
 	{
 		OreGin oreGin = (OreGin)machine;
 		if(oreGin.getLocation().getBlock().getType().equals(Material.DISPENSER) && !machineExistsAt(oreGin.getLocation()))
 		{
 			oreGins.add(oreGin);
-			return true;
+			return new InteractionResponse(InteractionResult.SUCCESS, "");
 		}
 		else
 		{
-			return false;
+			return new InteractionResponse(InteractionResult.FAILURE, "");
 		}
 	}
 	
@@ -252,7 +252,7 @@ public class OreGinManager implements Manager
 		if (item.getItemMeta().getDisplayName() == null)
 			return false;
 		
-		for(int i = 1; i <= MachineFactoryPlugin.MAX_TIERS; i++)
+		for(int i = 1; i <= MachineFactoryPlugin.MAX_OREGIN_TIERS; i++)
 		{
 			if (item.getItemMeta().getDisplayName().equalsIgnoreCase("T" + i + " OreGin"))
 			{
@@ -274,4 +274,11 @@ public class OreGinManager implements Manager
 						|| lightLocation.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_ON)));
 	}
 
+	/**
+	 * Returns the OreGinSaves file name
+	 */
+	public String getSavesFileName()
+	{
+		return MachineFactoryPlugin.ORE_GIN_SAVES_FILE;
+	}
 }

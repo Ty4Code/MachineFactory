@@ -1,4 +1,4 @@
-package com.github.MrTwiggy.MachineFactory;
+package com.github.MrTwiggy.MachineFactory.Utility;
 
 import java.util.List;
 

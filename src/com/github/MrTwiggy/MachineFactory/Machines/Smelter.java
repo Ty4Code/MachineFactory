@@ -7,10 +7,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.github.MrTwiggy.MachineFactory.Dimensions;
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.MachineObject;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
+import com.github.MrTwiggy.MachineFactory.Utility.Dimensions;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 
 /**
  * Smelter.java
@@ -232,6 +232,12 @@ public class Smelter extends MachineObject implements Machine
 		else
 			return null;
 			
+	}
+
+	@Override
+	public Location getLocation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -21,15 +21,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import com.github.MrTwiggy.MachineFactory.Dimensions;
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.MachineObject;
-import com.github.MrTwiggy.MachineFactory.OreGinProperties;
-import com.github.MrTwiggy.MachineFactory.InteractionResponse.InteractionResult;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
 import com.github.MrTwiggy.MachineFactory.Managers.OreGinManager;
+import com.github.MrTwiggy.MachineFactory.Properties.OreGinProperties;
 import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
+import com.github.MrTwiggy.MachineFactory.Utility.Dimensions;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.InteractionResult;
 
 /**
  * OreGin.java
@@ -120,7 +120,7 @@ public class OreGin extends MachineObject implements Machine
 				turnOnLight();
 				if (isFuelAvailable())
 				{
-					miningTimer += MachineFactoryPlugin.UPDATE_CYCLE;
+					miningTimer += MachineFactoryPlugin.OREGIN_UPDATE_CYCLE;
 					if (miningTimer >= oreGinProperties.getMiningDelay())
 					{
 						miningTimer = 0;
@@ -518,7 +518,7 @@ public class OreGin extends MachineObject implements Machine
 		//Add logic to determine whether upgrading the machine is possible
 		int desiredTier = tierLevel + 1;
 		OreGinProperties desiredTierProperties = MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier);
-		if (desiredTier <= MachineFactoryPlugin.MAX_TIERS)
+		if (desiredTier <= MachineFactoryPlugin.MAX_OREGIN_TIERS)
 		{
 			Material upgradeMaterial = desiredTierProperties.getUpgradeMaterial();
 			if (upgradeMaterialAvailable(desiredTier))
@@ -919,7 +919,7 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public static boolean isValidUpgrade(Location machineLocation, int desiredTier)
 	{
-		return (desiredTier <= MachineFactoryPlugin.MAX_TIERS) && isUpgradeMaterialAvailable(desiredTier, machineLocation);
+		return (desiredTier <= MachineFactoryPlugin.MAX_OREGIN_TIERS) && isUpgradeMaterialAvailable(desiredTier, machineLocation);
 	}
 	
 	/**
@@ -937,7 +937,7 @@ public class OreGin extends MachineObject implements Machine
 	{
 		int tierLevel = 0;
 			
-		for (int i = 1; i <= MachineFactoryPlugin.MAX_TIERS; i++)
+		for (int i = 1; i <= MachineFactoryPlugin.MAX_OREGIN_TIERS; i++)
 		{
 			if (name.contains(Integer.toString(i)))
 				tierLevel = i;

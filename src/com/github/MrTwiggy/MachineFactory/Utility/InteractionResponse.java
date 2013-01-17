@@ -1,4 +1,4 @@
-package com.github.MrTwiggy.MachineFactory;
+package com.github.MrTwiggy.MachineFactory.Utility;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

@@ -2,6 +2,8 @@ package com.github.MrTwiggy.MachineFactory;
 
 import org.bukkit.Location;
 
+import com.github.MrTwiggy.MachineFactory.Utility.Dimensions;
+
 /**
  * MachineObject.java
  * Purpose: Basic object base for machines to extend

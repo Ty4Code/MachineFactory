@@ -1,8 +1,9 @@
 package com.github.MrTwiggy.MachineFactory.Interfaces;
 
+import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 
 /**
  * Machine.java
@@ -37,4 +38,9 @@ public interface Machine
 	 * Toggles the current power state and returns interaction response
 	 */
 	public InteractionResponse togglePower();
+	
+	/**
+	 * Returns the location of the machine
+	 */
+	public Location getLocation();
 }

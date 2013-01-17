@@ -29,12 +29,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.Machines.OreGin;
 import com.github.MrTwiggy.MachineFactory.Machines.Smelter;
 import com.github.MrTwiggy.MachineFactory.Managers.OreGinManager;
 import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 
 /**
  * OreGinListener.java

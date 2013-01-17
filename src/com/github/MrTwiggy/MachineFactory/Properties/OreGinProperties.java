@@ -1,4 +1,4 @@
-package com.github.MrTwiggy.MachineFactory;
+package com.github.MrTwiggy.MachineFactory.Properties;
 
 import org.bukkit.Material;
 

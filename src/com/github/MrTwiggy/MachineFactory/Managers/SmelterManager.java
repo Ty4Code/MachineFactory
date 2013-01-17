@@ -7,11 +7,12 @@ import java.util.List;
 
 import org.bukkit.Location;
 
-import com.github.MrTwiggy.MachineFactory.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Manager;
 import com.github.MrTwiggy.MachineFactory.Machines.Smelter;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
+import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.InteractionResult;
 
 /**
  * SmelterManager.java
@@ -33,6 +34,10 @@ public class SmelterManager implements Manager
 	{
 		this.plugin = plugin;
 		smelters = new ArrayList<Smelter>();
+		
+		//To stop warnings temporarily
+		this.plugin.getClass();
+		smelters.getClass();
 		
 		updateMachines();
 	}
@@ -58,7 +63,6 @@ public class SmelterManager implements Manager
 	 */
 	public void updateMachines()
 	{
-	
 	}
 
 	/**
@@ -72,9 +76,9 @@ public class SmelterManager implements Manager
 	/**
 	 * Adds an existing Smelter
 	 */
-	public boolean addMachine(Machine machine)
+	public InteractionResponse addMachine(Machine machine)
 	{
-		return false;
+		return new InteractionResponse(InteractionResult.FAILURE, "");
 	}
 
 	/**
@@ -99,6 +103,14 @@ public class SmelterManager implements Manager
 	public void removeMachine(Machine machine) 
 	{
 		
+	}
+	
+	/**
+	 * Returns the OreGinSaves file name
+	 */
+	public String getSavesFileName()
+	{
+		return MachineFactoryPlugin.SMELTER_SAVES_FILE;
 	}
 
 }

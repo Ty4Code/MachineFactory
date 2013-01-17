@@ -3,11 +3,15 @@ package com.github.MrTwiggy.MachineFactory.Managers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Manager;
+import com.github.MrTwiggy.MachineFactory.Listeners.CloakerListener;
 import com.github.MrTwiggy.MachineFactory.Listeners.OreGinListener;
 import com.github.MrTwiggy.MachineFactory.Listeners.SmelterListener;
 
@@ -20,10 +24,8 @@ import com.github.MrTwiggy.MachineFactory.Listeners.SmelterListener;
  */
 public class MachinesManager 
 {
-	OreGinManager oreGinMan; // Manager object for OreGin
-	SmelterManager smelterMan; // Manager object for Smelter
-	OreGinListener oreGinListener; // Listener object for OreGin
-	SmelterListener smelterListener; //Listener object for Smelter
+	List<Listener> listeners;
+	List<Manager> managers;
 	
 	MachineFactoryPlugin plugin; //The plugin object
 	
@@ -36,6 +38,7 @@ public class MachinesManager
 		this.plugin = plugin;
 		
 		initializeManagers();
+		loadManagers();
 		
 		periodicSaving();
 	}
@@ -45,6 +48,9 @@ public class MachinesManager
 	 */
 	private void initializeManagers()
 	{
+		managers = new ArrayList<Manager>();
+		listeners = new ArrayList<Listener>();
+		
 		if (MachineFactoryPlugin.OREGIN_ENABLED)
 		{
 			initializeOreGinManager();
@@ -54,6 +60,10 @@ public class MachinesManager
 		{
 			initializeSmelterManager();
 		}
+		if (MachineFactoryPlugin.CLOAKER_ENABLED)
+		{
+			initializeCloakerManager();
+		}
 	}
 	
 	/**
@@ -61,10 +71,12 @@ public class MachinesManager
 	 */
 	private void initializeSmelterManager()
 	{
-		smelterMan = new SmelterManager(plugin);
-		smelterListener = new SmelterListener(smelterMan);
+		SmelterManager smelterMan = new SmelterManager(plugin);
+		Listener smelterListener = new SmelterListener(smelterMan);
 		plugin.getServer().getPluginManager().registerEvents(smelterListener, plugin);
-		load(smelterMan, getSmelterSavesFile());
+		
+		managers.add(smelterMan);
+		listeners.add(smelterListener);
 	}
 	
 	/**
@@ -72,10 +84,26 @@ public class MachinesManager
 	 */
 	private void initializeOreGinManager()
 	{
-		oreGinMan = new OreGinManager(plugin);
-		oreGinListener = new OreGinListener(oreGinMan);
+		OreGinManager oreGinMan = new OreGinManager(plugin);
+		OreGinListener oreGinListener = new OreGinListener(oreGinMan);
 		plugin.getServer().getPluginManager().registerEvents(oreGinListener, plugin);
-		load(oreGinMan, getOreGinSavesFile());
+		
+		managers.add(oreGinMan);
+		listeners.add(oreGinListener);
+	}
+	
+	/**
+	 * Initializes the Cloaker Manager
+	 */
+	private void initializeCloakerManager()
+	{
+		CloakerManager cloakerMan = new CloakerManager(plugin);
+		CloakerListener cloakerListener = new CloakerListener(cloakerMan);
+		plugin.getServer().getPluginManager().registerEvents(cloakerListener, plugin);
+		
+		managers.add(cloakerMan);
+		listeners.add(cloakerListener);
+		//LOAD
 	}
 	
 	/**
@@ -83,8 +111,43 @@ public class MachinesManager
 	 */
 	public void onDisable()
 	{
-		if (oreGinMan != null)
-			save(oreGinMan, getOreGinSavesFile());
+		saveManagers();
+	}
+	
+	/**
+	 * Saves all managers
+	 */
+	private void saveManagers()
+	{
+		for (Manager manager : managers)
+		{
+			save(manager, getSavesFile(manager.getSavesFileName()));
+		}
+	}
+	
+	/**
+	 * Loads all managers
+	 */
+	private void loadManagers()
+	{
+		for (Manager manager : managers)
+		{
+			load(manager, getSavesFile(manager.getSavesFileName()));
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public Manager getManager(Class managerType)
+	{
+		for (Manager manager : managers)
+		{
+			if (managerType.isInstance(manager))
+			{
+				return manager;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -118,14 +181,14 @@ public class MachinesManager
 	/**
 	 * Save file
 	 */
-	private static void save(Manager managerInterface, File file) 
+	private static void save(Manager manager, File file) 
 	{	
 		try
 		{
 			File newFile = new File(file.getAbsolutePath() + ".new");
 			File bakFile = new File(file.getAbsolutePath() + ".bak");
 			
-			managerInterface.save(newFile);
+			manager.save(newFile);
 			
 			if (bakFile.exists())
 			{
@@ -156,8 +219,8 @@ public class MachinesManager
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 		    @Override  
 		    public void run() {
-		    	MachineFactoryPlugin.sendConsoleMessage("Saving OreGin data...");
-		    	save(oreGinMan, getOreGinSavesFile());
+		    	MachineFactoryPlugin.sendConsoleMessage("Saving Machine data...");
+		    	saveManagers();
 		    }
 		}, (MachineFactoryPlugin.SAVE_CYCLE * MachineFactoryPlugin.TICKS_PER_SECOND * 60), 
 		MachineFactoryPlugin.SAVE_CYCLE * MachineFactoryPlugin.TICKS_PER_SECOND * 60);
@@ -166,17 +229,9 @@ public class MachinesManager
 	/**
 	 * Returns the OreGin Saves file
 	 */
-	public File getOreGinSavesFile()
+	public File getSavesFile(String fileName)
 	{
-		return new File(plugin.getDataFolder(), MachineFactoryPlugin.ORE_GIN_SAVES_FILE + ".txt");
-	}
-	
-	/**
-	 * Returns the Smelter Saves file
-	 */
-	public File getSmelterSavesFile()
-	{
-		return new File(plugin.getDataFolder(), MachineFactoryPlugin.SMELTER_SAVES_FILE + ".txt");
+		return new File(plugin.getDataFolder(), fileName + ".txt");
 	}
 
 }

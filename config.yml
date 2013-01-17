@@ -1,8 +1,30 @@
 general:
   oregin_enabled: true
   smelter_enabled: false
+  cloaker_enabled: true
   citadel_enabled: true
   save_cycle: 10
+  
+cloaker_general:
+  update_cycle: 20
+  max_tiers: 1
+  chunk_range: 10
+  cloaker_activated: JACK_O_LANTERN
+  cloaker_deactivated: PUMPKIN
+  cloaker_upgrade_wand: YELLOW_FLOWER
+  cloaker_activation_wand: RED_ROSE
+  
+  cloaker_tier_properties:
+    tier1:
+      upgrade_type: IRON_BLOCK
+      upgrade_amount: 5
+      fuel_time_duration: 30
+      fuel_type: REDSTONE
+      fuel_amount: 10
+      cloak_width: 3
+      cloak_height: 3
+      cloak_depth: 3
+      visibility_range: 25
   
 oregin_general:
   update_cycle: 5
