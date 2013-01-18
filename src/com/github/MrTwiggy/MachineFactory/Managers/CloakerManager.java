@@ -20,6 +20,7 @@ import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Manager;
 import com.github.MrTwiggy.MachineFactory.Machines.Cloaker;
+import com.github.MrTwiggy.MachineFactory.SoundCollections.CloakerSoundCollection;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.Utility.InventoryStringDeSerializer;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.InteractionResult;
@@ -142,13 +143,15 @@ public class CloakerManager implements Manager
 		if (cloaker.createCloaker())
 		{
 			cloakers.add(cloaker);
+			CloakerSoundCollection.getCreationSound().playSound(machineLocation);
 			return new InteractionResponse(InteractionResult.SUCCESS,
 					"Successfully created Cloaker!");
 		}
 		else
 		{
+			CloakerSoundCollection.getErrorSound().playSound(machineLocation);
 			return new InteractionResponse(InteractionResult.FAILURE,
-					"Proper upgrade materials missing from chest above Cloaker!");
+					"Missing the required upgrade materials from chest above Cloaker to create!");
 		}
 	}
 
