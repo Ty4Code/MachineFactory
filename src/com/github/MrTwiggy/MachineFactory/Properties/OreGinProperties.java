@@ -2,6 +2,8 @@ package com.github.MrTwiggy.MachineFactory.Properties;
 
 import org.bukkit.Material;
 
+import com.github.MrTwiggy.MachineFactory.Interfaces.Properties;
+
 /**
  * OreGinProperties.java
  * Purpose: Object for holding tier-specific OreGin Properties
@@ -9,7 +11,7 @@ import org.bukkit.Material;
  * @author MrTwiggy
  * @version 0.1 1/08/13
  */
-public class OreGinProperties 
+public class OreGinProperties implements Properties
 {
 	private final int max_mining_distance; //Maximum mining distance that can be reached by OreGin
 	private final int max_block_breaks; //Maximum number of block breaks before OreGin breaks

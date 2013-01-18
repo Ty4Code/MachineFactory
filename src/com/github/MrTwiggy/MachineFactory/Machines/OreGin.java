@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.lang.Math;
 
-import static com.untamedears.citadel.Utility.isReinforced;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,9 +22,11 @@ import org.bukkit.util.Vector;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.MachineObject;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
+import com.github.MrTwiggy.MachineFactory.Managers.MachinesManager;
 import com.github.MrTwiggy.MachineFactory.Managers.OreGinManager;
 import com.github.MrTwiggy.MachineFactory.Properties.OreGinProperties;
 import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
+import com.github.MrTwiggy.MachineFactory.Utility.CitadelInteraction;
 import com.github.MrTwiggy.MachineFactory.Utility.Dimensions;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.InteractionResult;
@@ -42,16 +42,15 @@ public class OreGin extends MachineObject implements Machine
 {
 
 	private int blockBreaks; //Number of blocks broken by OreGin
-	private int tierLevel; //Current tier level of OreGin
 	private boolean broken; //Whether OreGin is currently broken
 	private int miningDistance; //The current mining distance achieved by OreGin
 	private int miningTimer; //The current time elapsed since last mining operation
 	
+	public static final MachineType MACHINE_TYPE = MachineType.OREGIN; // The type this machine is
+	
 	private int blockPower; //Current block power of dispenser
 	
 	private OreGinManager oreGinMan; //An instance of the OreGin manager
-	
-	private OreGinProperties oreGinProperties; //The properties for this OreGin's tier level
 	
 	/*
 	 ----------OREGIN CONSTRUCTORS--------
@@ -63,14 +62,12 @@ public class OreGin extends MachineObject implements Machine
 	public OreGin(int blockBreaks, int tierLevel, boolean mining, boolean broken, int miningDistance, Location oreGinLocation,
 						OreGinManager oreGinMan)
 	{
-		super(oreGinLocation, new Dimensions(1,1,1), mining);
+		super(oreGinLocation, new Dimensions(1,1,1), mining, tierLevel, OreGin.MACHINE_TYPE);
 		setDefaultValues();
 		this.blockBreaks = blockBreaks;
-		this.tierLevel = tierLevel;
 		this.miningDistance = miningDistance;
 		this.broken = broken;
 		this.oreGinMan = oreGinMan;
-		updateOreGinProperties();
 		blockPower = oreGinLocation.getBlock().getBlockPower();
 	}
 	
@@ -79,11 +76,10 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public OreGin(Location oreGinLocation, OreGinManager oreGinMan)
 	{
-		super(oreGinLocation, new Dimensions(1,1,1));
+		super(oreGinLocation, new Dimensions(1,1,1), OreGin.MACHINE_TYPE);
 		setDefaultValues();
 		this.oreGinMan = oreGinMan;
 		OreGinSoundCollection.getCreationSound().playSound(oreGinLocation);
-		updateOreGinProperties();
 		blockPower = oreGinLocation.getBlock().getBlockPower();
 	}
 	
@@ -92,13 +88,12 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public OreGin(Location oreGinLocation, int tierLevel, int blockBreaks, OreGinManager oreGinMan)
 	{
-		super(oreGinLocation, new Dimensions(1,1,1));
+		super(oreGinLocation, new Dimensions(1,1,1), OreGin.MACHINE_TYPE);
 		setDefaultValues();
 		this.blockBreaks = blockBreaks;
 		this.tierLevel = tierLevel;
 		this.oreGinMan = oreGinMan;
 		OreGinSoundCollection.getPlacementSound().playSound(oreGinLocation);
-		updateOreGinProperties();
 		blockPower = oreGinLocation.getBlock().getBlockPower();
 	}
 	
@@ -121,11 +116,11 @@ public class OreGin extends MachineObject implements Machine
 				if (isFuelAvailable())
 				{
 					miningTimer += MachineFactoryPlugin.OREGIN_UPDATE_CYCLE;
-					if (miningTimer >= oreGinProperties.getMiningDelay())
+					if (miningTimer >= getProperties().getMiningDelay())
 					{
 						miningTimer = 0;
 						if ((oreGinMan.getBlockBreaksDuringCycle() 
-							+ (oreGinProperties.getShaftHeight()*oreGinProperties.getShaftWidth())) < MachineFactoryPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE)
+							+ (getProperties().getShaftHeight()*getProperties().getShaftWidth())) < MachineFactoryPlugin.MAXIMUM_BLOCK_BREAKS_PER_CYCLE)
 						{
 							mineForward();
 						}
@@ -195,14 +190,6 @@ public class OreGin extends MachineObject implements Machine
 	}
 	
 	/**
-	 * Updates ore gin properties
-	 */
-	public void updateOreGinProperties()
-	{
-		oreGinProperties = MachineFactoryPlugin.Ore_Gin_Properties.get(tierLevel);
-	}
-		
-	/**
 	 * Destroys the OreGin
 	 */
 	public void destroy(ItemStack item)
@@ -231,12 +218,12 @@ public class OreGin extends MachineObject implements Machine
 		ChatColor colorCode;
 		String status;
 		
-		if (blockBreaks >= oreGinProperties.getMaxBlockBreaks())
+		if (blockBreaks >= getProperties().getMaxBlockBreaks())
 		{
 			colorCode = ChatColor.RED;
 			status = "Broken";
 		}
-		else if (blockBreaks >= oreGinProperties.getMaxBlockBreaks()/2)
+		else if (blockBreaks >= getProperties().getMaxBlockBreaks()/2)
 		{
 			colorCode = ChatColor.YELLOW;
 			status = "Working";
@@ -265,7 +252,6 @@ public class OreGin extends MachineObject implements Machine
 		miningDistance = 0;
 		miningTimer = 0;
 		broken = false;
-		updateOreGinProperties();
 	}
 
 	/*
@@ -277,9 +263,9 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public void mineForward()
 	{
-		if (miningDistance < oreGinProperties.getMaxMiningDistance())
+		if (miningDistance < getProperties().getMaxMiningDistance())
 		{
-			if (blockBreaks < oreGinProperties.getMaxBlockBreaks())
+			if (blockBreaks < getProperties().getMaxBlockBreaks())
 			{
 				Vector miningOffset = getMiningOffset();
 				Location startingPos = machineLocation.getBlock().getLocation().add(
@@ -294,6 +280,12 @@ public class OreGin extends MachineObject implements Machine
 					{
 						for (int z = 0; z < Math.max(1,  Math.abs(miningOffset.getZ()*2)); z++)
 						{
+							if (!active)
+							{
+								removeFuel();
+								return;
+							}
+							
 							if (mineBlock(startingPos.getBlock().getLocation().add(getBlockOffset(x,y,z)).getBlock().getRelative(facing, miningDistance + 1)))
 							{
 								blockBreaks++;
@@ -328,7 +320,7 @@ public class OreGin extends MachineObject implements Machine
 	{
 		Material blockType = block.getType();
 		
-		if ( oreGinMan.machineExistsAt(block.getLocation()) || oreGinMan.oreGinLightExistsAt(block.getLocation()))
+		if (MachinesManager.machineMan.macineExistsAt(block.getLocation()))
 		{
 			return false;
 		}
@@ -343,10 +335,11 @@ public class OreGin extends MachineObject implements Machine
 		}
 		else
 		{
-			if ((MachineFactoryPlugin.CITADEL_ENABLED && !isReinforced(block))
-					|| !MachineFactoryPlugin.CITADEL_ENABLED)
+			Block oreGinBlock = machineLocation.getBlock(); //If the reinforcements match
+			if (CitadelInteraction.blockReinforced(block) && CitadelInteraction.reinforcementsMatch(block, oreGinBlock)
+					|| !CitadelInteraction.blockReinforced(block))
 			{
-				if (oreGinProperties.getRetrieveValuables() && MachineFactoryPlugin.VALUABLES.contains(blockType))
+				if (getProperties().getRetrieveValuables() && MachineFactoryPlugin.VALUABLES.contains(blockType))
 				{
 					Collection<ItemStack> drops = block.getDrops();
 						
@@ -374,6 +367,7 @@ public class OreGin extends MachineObject implements Machine
 			}
 			else
 			{
+				powerOff();
 				return false;
 			}
 		}
@@ -408,30 +402,30 @@ public class OreGin extends MachineObject implements Machine
 		Vector miningOffset = new Vector(0, 0, 0);
 		
 		//Determines the Z or X offset
-		if (oreGinProperties.getShaftWidth() > 1)
+		if (getProperties().getShaftWidth() > 1)
 		{
 			if (facing.equals(BlockFace.NORTH))
 			{
-					miningOffset.setX((double)-oreGinProperties.getShaftWidth() / 2);
+					miningOffset.setX((double)-getProperties().getShaftWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.SOUTH))
 			{
-					miningOffset.setX((double)oreGinProperties.getShaftWidth() / 2);
+					miningOffset.setX((double)getProperties().getShaftWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.EAST))
 			{
-					miningOffset.setZ((double)-oreGinProperties.getShaftWidth() / 2);
+					miningOffset.setZ((double)-getProperties().getShaftWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.WEST))
 			{
-					miningOffset.setZ((double)oreGinProperties.getShaftWidth() / 2);
+					miningOffset.setZ((double)getProperties().getShaftWidth() / 2);
 			}
 		}
 		
 		//Determines the Y offset
-		if (oreGinProperties.getShaftHeight() > 1)
+		if (getProperties().getShaftHeight() > 1)
 		{
-			miningOffset.setY((double)-oreGinProperties.getShaftHeight() / 2);
+			miningOffset.setY((double)-getProperties().getShaftHeight() / 2);
 		}
 		
 		return miningOffset;
@@ -488,8 +482,8 @@ public class OreGin extends MachineObject implements Machine
 				{
 					OreGinSoundCollection.getErrorSound().playSound(machineLocation);
 					return new InteractionResponse(InteractionResult.FAILURE, 
-							"Missing fuel! " + requiredAvailableMaterials(oreGinProperties.getFuelAmount(),
-									oreGinProperties.getFuelMaterial()));
+							"Missing fuel! " + getRequiredAvailableMaterials(getProperties().getFuelAmount(),
+									getProperties().getFuelMaterial()));
 				}
 			}
 			else
@@ -505,75 +499,7 @@ public class OreGin extends MachineObject implements Machine
 		}
 		
 	}
-	
-	/*
-	 ----------UPGRADE LOGIC--------
-	 */
-	
-	/**
-	 * Attempt to upgrade OreGin
-	 */
-	public InteractionResponse upgrade()
-	{
-		//Add logic to determine whether upgrading the machine is possible
-		int desiredTier = tierLevel + 1;
-		OreGinProperties desiredTierProperties = MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier);
-		if (desiredTier <= MachineFactoryPlugin.MAX_OREGIN_TIERS)
-		{
-			Material upgradeMaterial = desiredTierProperties.getUpgradeMaterial();
-			if (upgradeMaterialAvailable(desiredTier))
-			{
-				removeUpgradeMaterial(desiredTier);
-				tierLevel++;
-				updateOreGinProperties();
-				OreGinSoundCollection.getUpgradeSound().playSound(machineLocation);
-				return new InteractionResponse(InteractionResult.SUCCESS,
-						"OreGin successfully upgraded to tier " + tierLevel + "!");
-			}
-			else
-			{
-				OreGinSoundCollection.getErrorSound().playSound(machineLocation);
-				return new InteractionResponse(InteractionResult.FAILURE,
-						 "Missing upgrade materials! " 
-								 + requiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
-									upgradeMaterial));
-			}
-		}
-		else
-		{
-			OreGinSoundCollection.getErrorSound().playSound(machineLocation);
-			return new InteractionResponse(InteractionResult.FAILURE,
-					"OreGin is already max tier level!");
-		}
-	}
-	
-	/**
-	 * Attempts to remove upgrade material from dispenser
-	 */
-	public boolean removeUpgradeMaterial(int desiredTier)
-	{
-		return removeMaterial(MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeAmount(),
-				MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeMaterial(), this.machineLocation);
-	}
 
-	/**
-	 * Returns whether the material for an upgrade is available
-	 */
-	public boolean upgradeMaterialAvailable(int desiredTier)
-	{
-		return isMaterialAvailable(MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeAmount(),
-				MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeMaterial(), this.machineLocation);
-	}
-	
-	/**
-	 * Returns whether the material for an upgrade is available
-	 */
-	public static boolean isUpgradeMaterialAvailable(int desiredTier, Location machineLocation)
-	{
-		return isMaterialAvailable(MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeAmount(),
-				MachineFactoryPlugin.Ore_Gin_Properties.get(desiredTier).getUpgradeMaterial(), machineLocation);
-	}
-	
 	/*
 	 ----------REPAIR LOGIC--------
 	 */
@@ -601,8 +527,8 @@ public class OreGin extends MachineObject implements Machine
 				
 				return new InteractionResponse(InteractionResult.FAILURE,
 												"Missing repair materials! " 
-												+ requiredAvailableMaterials(oreGinProperties.getRepairAmount(),
-												oreGinProperties.getRepairMaterial()));
+												+ getRequiredAvailableMaterials(getProperties().getRepairAmount(),
+														getProperties().getRepairMaterial()));
 			}
 		}
 		else
@@ -619,7 +545,7 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public boolean isRepairMaterialAvailable()
 	{
-		return isMaterialAvailable(oreGinProperties.getRepairAmount(), oreGinProperties.getRepairMaterial(), this.machineLocation);
+		return isMaterialAvailable(getProperties().getRepairAmount(), getProperties().getRepairMaterial(), this.machineLocation);
 	}
 	
 	/**
@@ -627,7 +553,7 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public boolean removeRepairMaterials()
 	{
-		return removeMaterial(oreGinProperties.getRepairAmount(), oreGinProperties.getRepairMaterial(), this.machineLocation);
+		return removeMaterial(getProperties().getRepairAmount(), getProperties().getRepairMaterial(), this.machineLocation);
 	}
 		
 	/*
@@ -639,7 +565,7 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public boolean isFuelAvailable()
 	{
-		return isMaterialAvailable(oreGinProperties.getFuelAmount(), oreGinProperties.getFuelMaterial(), this.machineLocation);
+		return isMaterialAvailable(getProperties().getFuelAmount(), getProperties().getFuelMaterial(), this.machineLocation);
 	}
 	
 	/**
@@ -647,7 +573,7 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public boolean removeFuel()
 	{		
-		return removeMaterial(oreGinProperties.getFuelAmount(), oreGinProperties.getFuelMaterial(), this.machineLocation);
+		return removeMaterial(getProperties().getFuelAmount(), getProperties().getFuelMaterial(), this.machineLocation);
 	}
 
 	/*
@@ -694,40 +620,7 @@ public class OreGin extends MachineObject implements Machine
 	/*
 	 ----------DISPENSER INVENTORY LOGIC--------
 	 */
-	
-	/**
-	 * Attempts to remove a specific material of given amount from dispenser inventory
-	 */
-	public boolean removeMaterial(int amount, Material material)
-	{
-		return removeMaterial(amount, material, this.machineLocation);
-	}
-	
-	/**
-	 * Checks if a specific material of given amount is available in dispenser inventory
-	 */
-	public boolean isMaterialAvailable(int amount, Material material)
-	{
-		return isMaterialAvailable(amount, material, this.machineLocation);
-	}
-	
-	/**
-	 * Returns how much of a specified material is available in dispenser inventory
-	 */
-	public int getMaterialAvailableAmount(Material material)
-	{
-		return getMaterialAvailableAmount(material, this.machineLocation);
-	}
-	
-	/**
-	 * Returns the "Required: (X MATERIAL) Available: (Y MATERIAL)" message
-	 */
-	public String requiredAvailableMaterials(int amount, Material material)
-	{
-		return "Required: (" + amount + " " + material.toString() + ") Available: ("
-				+ OreGin.getMaterialAvailableAmount(material, machineLocation) + " " + material.toString() + ")";
-	}
-	
+
 	/**
      * Adds a specific material to dispenser and returns left overs
 	 */
@@ -786,6 +679,14 @@ public class OreGin extends MachineObject implements Machine
 	public int getTierLevel()
 	{
 		return tierLevel;
+	}
+	
+	/**
+	 * Returns the properties for this machine
+	 */
+	public OreGinProperties getProperties()
+	{
+		return (OreGinProperties)machineProperties;
 	}
 	
 	/*
@@ -917,9 +818,9 @@ public class OreGin extends MachineObject implements Machine
 	/**
 	 * Whether OreGin is upgrade-able
 	 */
-	public static boolean isValidUpgrade(Location machineLocation, int desiredTier)
+	public boolean isValidUpgrade(int desiredTier)
 	{
-		return (desiredTier <= MachineFactoryPlugin.MAX_OREGIN_TIERS) && isUpgradeMaterialAvailable(desiredTier, machineLocation);
+		return (desiredTier <= MachineFactoryPlugin.MAX_OREGIN_TIERS) && upgradeMaterialAvailable(desiredTier);
 	}
 	
 	/**

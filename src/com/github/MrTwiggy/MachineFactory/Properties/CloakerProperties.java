@@ -2,6 +2,8 @@ package com.github.MrTwiggy.MachineFactory.Properties;
 
 import org.bukkit.Material;
 
+import com.github.MrTwiggy.MachineFactory.Interfaces.Properties;
+
 /**
  * CloakerProperties.java
  * Purpose: Holds data for Cloaker Tier Properties
@@ -9,7 +11,7 @@ import org.bukkit.Material;
  * @author MrTwiggy
  * @version 0.1 1/17/13
  */
-public class CloakerProperties
+public class CloakerProperties implements Properties
 {
 	Material upgrade_type; // The material type used to upgrade to this tier
 	int upgrade_amount; // The amount of upgrade_type used to upgrade to this tier
@@ -42,7 +44,7 @@ public class CloakerProperties
 	/**
 	 * 'upgrade_type' public accessor
 	 */
-	public Material getUpgradeType()
+	public Material getUpgradeMaterial()
 	{
 		return upgrade_type;
 	}
@@ -66,7 +68,7 @@ public class CloakerProperties
 	/**
 	 * 'fuel_type' public accessor
 	 */
-	public Material getFuelType()
+	public Material getFuelMaterial()
 	{
 		return fuel_type;
 	}

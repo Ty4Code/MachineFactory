@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.Listener;
 
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
@@ -29,6 +30,8 @@ public class MachinesManager
 	
 	MachineFactoryPlugin plugin; //The plugin object
 	
+	public static MachinesManager machineMan;
+	
 	
 	/**
 	 * Constructor
@@ -36,6 +39,7 @@ public class MachinesManager
 	public MachinesManager(MachineFactoryPlugin plugin)
 	{
 		this.plugin = plugin;
+		MachinesManager.machineMan = this;
 		
 		initializeManagers();
 		loadManagers();
@@ -234,4 +238,18 @@ public class MachinesManager
 		return new File(plugin.getDataFolder(), fileName + ".txt");
 	}
 
+	/**
+	 * Returns whether a machine exists at given location in any manager
+	 */
+	public boolean macineExistsAt(Location location)
+	{
+		for (Manager manager : managers)
+		{
+			if (manager.machineExistsAt(location))
+			{
+				return true;
+			}
+		}	
+		return false;
+	}
 }

@@ -166,15 +166,22 @@ public class OreGinManager implements Manager
 		
 		if (OreGin.isValidOreGinCreationLocation(machineLocation))
 		{
-			if (!machineExistsAt(machineLocation) && OreGin.isValidUpgrade(machineLocation, 1))
+			if (!machineExistsAt(machineLocation))
 			{
 				OreGin oreGin = new OreGin(machineLocation, this);
-				addMachine(oreGin);
-				oreGin.removeUpgradeMaterial(1);
-				plugin.getLogger().info("New OreGin created!");
-				
-				return new InteractionResponse(InteractionResult.SUCCESS,
-						"Successfully created OreGin!");
+				if (oreGin.isValidUpgrade(1))
+				{
+					addMachine(oreGin);
+					oreGin.removeUpgradeMaterial(1);
+					
+					return new InteractionResponse(InteractionResult.SUCCESS,
+							"Successfully created OreGin!");
+				}
+				else
+				{
+					return new InteractionResponse(InteractionResult.FAILURE,
+							"Unsuccessful in creating OreGin!");
+				}
 			}
 			else
 			{
@@ -239,7 +246,7 @@ public class OreGinManager implements Manager
 	 */
 	public boolean machineExistsAt(Location machineLocation)
 	{
-		return (getMachine(machineLocation) != null);
+		return ((getMachine(machineLocation) != null) || oreGinLightExistsAt(machineLocation));
 	}
 	
 	/**
@@ -269,7 +276,7 @@ public class OreGinManager implements Manager
 	 */
 	public boolean oreGinLightExistsAt(Location lightLocation)
 	{
-		return (machineExistsAt(lightLocation.getBlock().getRelative(BlockFace.DOWN).getLocation())
+		return (getMachine(lightLocation.getBlock().getRelative(BlockFace.DOWN).getLocation()) != null
 				&& (lightLocation.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_OFF) 
 						|| lightLocation.getBlock().getType().equals(MachineFactoryPlugin.LIGHT_ON)));
 	}

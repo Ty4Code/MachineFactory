@@ -26,13 +26,16 @@ public class Smelter extends MachineObject implements Machine
 	public static final int HEIGHT = 3; // The height of a Smelter machine
 	public static final int DEPTH = 4; // The depth of a Smelter machine
 	
+	public static final MachineType MACHINE_TYPE = MachineType.SMELTER; // The type this machine is
+	
 	/**
 	 * Constructor
 	 */
 	public Smelter (Location machineLocation)
 	{
 		super(machineLocation,
-				Smelter.getDimensions(Smelter.getDirection(machineLocation.getBlock().getState().getRawData())));
+				Smelter.getDimensions(Smelter.getDirection(machineLocation.getBlock().getState().getRawData())),
+				Smelter.MACHINE_TYPE);
 	}
 	
 	/**

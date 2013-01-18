@@ -73,7 +73,7 @@ public class InventoryStringDeSerializer
     {
         String[] serializedBlocks = invString.split(";");
         String invInfo = serializedBlocks[0];
-        Inventory deserializedInventory = Bukkit.getServer().createInventory(null, Integer.valueOf(invInfo));
+        Inventory deserializedInventory = Bukkit.getServer().createInventory(null, Integer.valueOf(invInfo), "Cloaker Inventory");
        
         for (int i = 1; i < serializedBlocks.length; i++)
         {

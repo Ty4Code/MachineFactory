@@ -105,7 +105,6 @@ public class CloakerManager implements Manager
 			boolean active = Boolean.parseBoolean(parts[5]);
 			double cloaked_duration = Double.parseDouble(parts[6]);
 			Inventory cloaker_inventory = InventoryStringDeSerializer.StringToInventory(parts[7]);
-			
 			Cloaker cloaker = new Cloaker(tierLevel, active, cloaked_duration, cloaker_inventory,
 					cloakerLocation);
 			addMachine(cloaker);
@@ -140,9 +139,17 @@ public class CloakerManager implements Manager
 	public InteractionResponse createMachine(Location machineLocation) 
 	{
 		Cloaker cloaker = new Cloaker(machineLocation);
-		cloakers.add(cloaker);
-		return new InteractionResponse(InteractionResult.SUCCESS,
-				"Successfully created Cloaker!");
+		if (cloaker.createCloaker())
+		{
+			cloakers.add(cloaker);
+			return new InteractionResponse(InteractionResult.SUCCESS,
+					"Successfully created Cloaker!");
+		}
+		else
+		{
+			return new InteractionResponse(InteractionResult.FAILURE,
+					"Proper upgrade materials missing from chest above Cloaker!");
+		}
 	}
 
 	/**

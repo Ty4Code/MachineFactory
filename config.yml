@@ -1,74 +1,93 @@
 general:
-  oregin_enabled: true
-  smelter_enabled: false
-  cloaker_enabled: true
-  citadel_enabled: true
-  save_cycle: 10
+  oregin_enabled: true 					# Whether OreGin machines are enabled
+  smelter_enabled: false 				# Whether Smelter machines are enabled (LEAVE AS FALSE)
+  cloaker_enabled: true 				# Whether Cloaker machines are enabled
+  citadel_enabled: true 				# Whether server has Citadel enabled
+  save_cycle: 10 						# Time in minutes between periodic saves of machines
   
 cloaker_general:
-  update_cycle: 20
-  max_tiers: 1
-  chunk_range: 10
-  cloaker_activated: JACK_O_LANTERN
-  cloaker_deactivated: PUMPKIN
-  cloaker_upgrade_wand: YELLOW_FLOWER
-  cloaker_activation_wand: RED_ROSE
+  update_cycle: 20 						# How often Cloakers are updated (IN TICKS)
+  max_tiers: 3 							# The max tiers for Cloakers to upgrade through
+  cloaker_activated: JACK_O_LANTERN 	# The material used for Cloaker machines while activated
+  cloaker_deactivated: PUMPKIN 			# The material used for Cloaker machines while deactivated
+  cloaker_upgrade_wand: YELLOW_FLOWER 	# The item used to upgrade Cloakers
+  cloaker_activation_wand: RED_ROSE 	# The item used to activate/deactivate cloakers
   
   cloaker_tier_properties:
-    tier1:
+    tier1:								# Tier 1 Cloaker Properties
+      upgrade_type: IRON_BLOCK			# The material used to upgrade to this tier
+      upgrade_amount: 5					# The amount of upgrade_type items used to upgrade
+      fuel_time_duration: 30			# How long a cloak will last before having to refuel
+      fuel_type: REDSTONE				# The material used to fuel cloaking
+      fuel_amount: 10					# The amount of fuel_type items used to fuel
+      cloak_width: 3					# The width of the cloaking field (IN BLOCKS)
+      cloak_height: 3					# The height of the cloaking field (IN BLOCKS)
+      cloak_depth: 3					# The depth of the cloaking field (IN BLOCKS)
+      visibility_range: 5				# How close a player must be to see the cloaked blocks (IN BLOCKS)
+    tier2:								# Tier 2 Cloaker Properties
       upgrade_type: IRON_BLOCK
-      upgrade_amount: 5
+      upgrade_amount: 64
       fuel_time_duration: 30
       fuel_type: REDSTONE
       fuel_amount: 10
-      cloak_width: 3
-      cloak_height: 3
-      cloak_depth: 3
+      cloak_width: 9
+      cloak_height: 9
+      cloak_depth: 9
+      visibility_range: 13
+    tier3:								# Tier 3 Cloaker Properties
+      upgrade_type: GOLD_BLOCK
+      upgrade_amount: 32
+      fuel_time_duration: 600
+      fuel_type: IRON_INGOT
+      fuel_amount: 3
+      cloak_width: 21
+      cloak_height: 21
+      cloak_depth: 21
       visibility_range: 25
   
 oregin_general:
-  update_cycle: 5
-  maximum_block_breaks_per_cycle: 500
-  max_tiers: 7
-  oregin_upgrade_wand: YELLOW_FLOWER
-  oregin_activation_wand: RED_ROSE
-  oregin_repair_wand: IRON_SPADE
-  oregin_light_on: REDSTONE_LAMP_ON
-  oregin_light_off: REDSTONE_LAMP_OFF
-  redstone_activation_enabled: true
-  repairing_enabled: true
-  lava_mining_enabled: true
-  water_mining_enabled: true
-  junk_destruction_enabled: true
-  valuables:
+  update_cycle: 5						# How often OreGins should be updated (IN TICKS)
+  maximum_block_breaks_per_cycle: 500	# The maximum number of total block breaks per cycle
+  max_tiers: 7							# The maximum number of tiers for OreGins
+  oregin_upgrade_wand: YELLOW_FLOWER	# The item used to upgrade and create OreGins
+  oregin_activation_wand: RED_ROSE		# The item used to activate/deactivate OreGins
+  oregin_repair_wand: IRON_SPADE		# The item used to repair OreGins
+  oregin_light_on: REDSTONE_LAMP_ON		# The material used when the OreGin is activated
+  oregin_light_off: REDSTONE_LAMP_OFF	# The material used when the OreGin is deactivated
+  redstone_activation_enabled: true		# Whether OreGins can be activated using redstone
+  repairing_enabled: true				# Whether OreGins can be broken and repaired
+  lava_mining_enabled: true				# Whether OreGins can mine lava blocks
+  water_mining_enabled: true			# Whether OreGins can mine water blocks
+  junk_destruction_enabled: true		# Whether OreGins will destroy item drops from 'JUNK' blocks
+  valuables:							# List of 'valuable' blocks
   - IRON_ORE
   - GOLD_ORE
   - DIAMOND_ORE
   - LAPIS_ORE
-  junk:
+  junk:									# List of 'junk' blocks
   - STONE
   - DIRT
   - GRAVEL
   - SAND
   - GRASS
-  indestructible:
+  indestructible:						# List of 'indestructible' blocks
   - BEDROCK
   - OBSIDIAN
   oregin_tier_properties:
-    tier1:
-      max_mining_distance: 20
-      max_block_breaks: 160
-      mining_delay: 40
-      retrieve_valuables: false
-      fuel_type: REDSTONE
-      fuel_amount: 1
-      upgrade_material: IRON_BLOCK
-      upgrade_amount: 5
-      repair_material: IRON_BLOCK
-      repair_amount: 2
-      shaft_width: 1
-      shaft_height: 1
-    tier2:
+    tier1:								# Tier 1 OreGin Properties
+      max_mining_distance: 20			# The maximum distance this OreGin tier can mine
+      max_block_breaks: 160				# Number of blocks mined before OreGin breaks
+      mining_delay: 40					# The delay between mining operations
+      retrieve_valuables: false			# Whether valuable drops will be teleported to the OreGin
+      fuel_type: REDSTONE				# The material used for fueling this tier
+      fuel_amount: 1					# The amount of fuel_type items used to fuel one mining opreation
+      upgrade_material: IRON_BLOCK		# The type of material used to upgrade to this tier
+      upgrade_amount: 5					# The amount of upgrade_material used to upgrade
+      repair_material: IRON_BLOCK		# The type of material used to repair this tier
+      repair_amount: 2					# The amount of repair_material items used to repair
+      shaft_width: 1					# The width of the shaft mined
+      shaft_height: 1					# The height of the shaft mined
+    tier2:								# Tier 2 OreGin Properties
       max_mining_distance: 35
       max_block_breaks: 300
       mining_delay: 30
@@ -81,7 +100,7 @@ oregin_general:
       repair_amount: 8
       shaft_width: 3
       shaft_height: 1   
-    tier3:
+    tier3:								# Tier 3 OreGin Properties
       max_mining_distance: 50
       max_block_breaks: 1000
       mining_delay: 20
@@ -94,7 +113,7 @@ oregin_general:
       repair_amount: 20
       shaft_width: 3
       shaft_height: 3 
-    tier4:
+    tier4:								# Tier 4 OreGin Properties
       max_mining_distance: 75
       max_block_breaks: 1875
       mining_delay: 15
@@ -107,7 +126,7 @@ oregin_general:
       repair_amount: 28
       shaft_width: 5
       shaft_height: 5
-    tier5:
+    tier5:								# Tier 5 OreGin Properties
       max_mining_distance: 100
       max_block_breaks: 3000
       mining_delay: 10
@@ -120,7 +139,7 @@ oregin_general:
       repair_amount: 14
       shaft_width: 6
       shaft_height: 6
-    tier6:
+    tier6:								# Tier 6 OreGin Properties
       max_mining_distance: 125
       max_block_breaks: 5000
       mining_delay: 5
@@ -133,7 +152,7 @@ oregin_general:
       repair_amount: 30
       shaft_width: 8
       shaft_height: 8
-    tier7:
+    tier7:								# Tier 7 OreGin Properties
       max_mining_distance: 150
       max_block_breaks: 10000
       mining_delay: 5

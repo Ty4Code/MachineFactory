@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -38,9 +38,8 @@ public class Cloaker extends MachineObject implements Machine
 	List<Block> cloakedBlocks; // List of blocks in the cloaking field
 	Map<String, Boolean> cloakedClients; // List of clients within cloaking chunk range
 	
-	private int tierLevel; // The current tier level
-	private CloakerProperties cloakerProperties; // The current properties for this tier of Cloaker
-	private Inventory cloakerInventory; // The inventory of the Cloaker
+	public static final MachineType MACHINE_TYPE = MachineType.CLOAKER; // The type this machine is
+
 	private double cloakedDuration; // The duration of the current cloaking
 	
 	/*
@@ -52,14 +51,11 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public Cloaker(Location machineLocation) 
 	{
-		super(machineLocation, new Dimensions(1,1,1));
+		super(machineLocation, new Dimensions(1,1,1), Cloaker.MACHINE_TYPE);
 		cloakedBlocks = new ArrayList<Block>();
 		cloakedClients = new HashMap<String, Boolean>();
-		tierLevel = 1;
 		cloakedDuration = 0;
-		cloakerInventory = Bukkit.getServer().createInventory(null, 27, "Cloaker Inventory");
-		updateCloakerProperties();
-		InitiateCloaking();
+		initiateCloaking();
 		CloakerSoundCollection.getCreationSound().playSound(machineLocation);
 	}
 	
@@ -68,14 +64,11 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public Cloaker(int tierLevel, Location machineLocation) 
 	{
-		super(machineLocation, new Dimensions(1,1,1));
+		super(machineLocation, new Dimensions(1,1,1), tierLevel, Cloaker.MACHINE_TYPE);
 		cloakedBlocks = new ArrayList<Block>();
 		cloakedClients = new HashMap<String, Boolean>();
-		this.tierLevel = tierLevel;
 		cloakedDuration = 0;
-		cloakerInventory = Bukkit.getServer().createInventory(null, 27, "Cloaker Inventory");
-		updateCloakerProperties();
-		InitiateCloaking();
+		initiateCloaking();
 		CloakerSoundCollection.getPlacementSound().playSound(machineLocation);
 	}
 	
@@ -85,14 +78,12 @@ public class Cloaker extends MachineObject implements Machine
 	public Cloaker(int tierLevel, boolean active, double cloakedDuration, Inventory cloakerInventory,
 			Location machineLocation) 
 	{
-		super(machineLocation, new Dimensions(1,1,1), active);
+		super(machineLocation, new Dimensions(1,1,1), active, tierLevel, Cloaker.MACHINE_TYPE,
+				cloakerInventory);
 		cloakedBlocks = new ArrayList<Block>();
 		cloakedClients = new HashMap<String, Boolean>();
-		this.tierLevel = tierLevel;
 		this.cloakedDuration = cloakedDuration;
-		this.cloakerInventory = cloakerInventory;
-		updateCloakerProperties();
-		InitiateCloaking();
+		initiateCloaking();
 	}
 	
 	/*
@@ -104,12 +95,17 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public void update() 
 	{
+		if (upgraded)
+		{
+			initiateCloaking();
+		}
+		
 		if (active) //If cloaking
 		{
-			CloakBlocks();
+			cloakBlocks();
+			
 			cloakedDuration += (MachineFactoryPlugin.CLOAKER_UPDATE_CYCLE / MachineFactoryPlugin.TICKS_PER_SECOND);
-			MachineFactoryPlugin.sendConsoleMessage("Duration: " + cloakerProperties.getFuelTimeDuration());
-			if (cloakedDuration >= cloakerProperties.getFuelTimeDuration())
+			if (cloakedDuration >= getProperties().getFuelTimeDuration())
 			{
 				cloakedDuration = 0;
 				
@@ -128,15 +124,7 @@ public class Cloaker extends MachineObject implements Machine
 
 		}
 	}
-	
-	/**
-	 * Updates the current Cloaker Properties
-	 */
-	public void updateCloakerProperties()
-	{
-		cloakerProperties = MachineFactoryPlugin.Cloaker_Properties.get(tierLevel);
-	}
-	
+
 	/**
 	 * Destroys the Cloaker and drops appropriate items
 	 */
@@ -146,7 +134,7 @@ public class Cloaker extends MachineObject implements Machine
 		machineLocation.getWorld().dropItemNaturally(machineLocation, item);
 		machineLocation.getBlock().setType(Material.AIR);
 		
-		ItemStack[] contents = cloakerInventory.getContents();
+		ItemStack[] contents = machineInventory.getContents();
 		for (int i = 0; i < contents.length; i++)
 		{
 			if (contents[i] != null)
@@ -167,67 +155,7 @@ public class Cloaker extends MachineObject implements Machine
 		meta.setDisplayName(name);
 		item.setItemMeta(meta);
 	}
-		
-	/*
-	 ----------CLOAKER UPGRADE LOGIC--------
-	 */
-	
-	/**
-	 * Attempts to upgrade Cloaker
-	 */
-	public InteractionResponse upgrade()
-	{
-		int desiredTier = tierLevel + 1;
-		CloakerProperties desiredTierProperties = MachineFactoryPlugin.Cloaker_Properties.get(desiredTier);
-		
-		if (desiredTier <= MachineFactoryPlugin.MAX_CLOAKER_TIERS)
-		{
-			Material upgradeMaterial = desiredTierProperties.getUpgradeType();
-			
-			if (upgradeMaterialAvailable(desiredTier))
-			{
-				removeUpgradeMaterial(desiredTier);
-				tierLevel = desiredTier;
-				updateCloakerProperties();
-				CloakerSoundCollection.getUpgradeSound().playSound(machineLocation);
-				return new InteractionResponse(InteractionResult.SUCCESS,
-						"Cloaker successfully upgraded to tier " + tierLevel + "!");
-			}
-			else
-			{
-				CloakerSoundCollection.getErrorSound().playSound(machineLocation);
-				return new InteractionResponse(InteractionResult.FAILURE,
-						 "Missing upgrade materials! " 
-								 + getRequiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
-									upgradeMaterial));
-			}
-		}
-		else
-		{
-			CloakerSoundCollection.getErrorSound().playSound(machineLocation);
-			return new InteractionResponse(InteractionResult.FAILURE,
-					"Cloaker is already max tier level!");
-		}
-	}
-	
-	/**
-	 * Returns whether there is enough material available for an upgrade in cloaker inventory
-	 */
-	public boolean upgradeMaterialAvailable(int desiredTier)
-	{
-		CloakerProperties properties = MachineFactoryPlugin.Cloaker_Properties.get(desiredTier);
-		return (isMaterialAvailable(properties.getUpgradeAmount(), properties.getUpgradeType()));
-	}
-	
-	/**
-	 * Attempts to remove materials for upgrading from cloaker inventory
-	 */
-	public boolean removeUpgradeMaterial(int desiredTier)
-	{
-		CloakerProperties properties = MachineFactoryPlugin.Cloaker_Properties.get(desiredTier);
-		return (removeMaterial(properties.getUpgradeAmount(), properties.getUpgradeType()));
-	}
-	
+
 	/*
 	 ----------CLOAKER FUEL LOGIC--------
 	 */
@@ -237,7 +165,7 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public boolean fuelAvailable()
 	{
-		return (isMaterialAvailable(cloakerProperties.getFuelAmount(), cloakerProperties.getFuelType()));
+		return (isMaterialAvailable(getProperties().getFuelAmount(), getProperties().getFuelMaterial()));
 	}
 	
 	/**
@@ -246,17 +174,17 @@ public class Cloaker extends MachineObject implements Machine
 	public boolean removeFuel()
 	{
 		CloakerSoundCollection.getRefuelSound().playSound(machineLocation);
-		return (removeMaterial(cloakerProperties.getFuelAmount(), cloakerProperties.getFuelType()));
+		return (removeMaterial(getProperties().getFuelAmount(), getProperties().getFuelMaterial()));
 	}
 	
 	/*
 	 ----------CLOAKING LOGIC--------
 	 */
-	
+
 	/**
 	 * Cloaks all designated blocks
 	 */
-	public void CloakBlocks()
+	public void cloakBlocks()
 	{		
 		for (Player player : machineLocation.getWorld().getPlayers())
 		{
@@ -277,7 +205,7 @@ public class Cloaker extends MachineObject implements Machine
 				
 				if (!cloakedClients.get(player.getName())) // If cloaked
 				{
-					if (playerDist <= cloakerProperties.getVisibilityRange())
+					if (playerDist <= getProperties().getVisibilityRange())
 					{
 						for (Block block : cloakedBlocks)
 						{
@@ -288,7 +216,7 @@ public class Cloaker extends MachineObject implements Machine
 				}
 				else // If not cloaked
 				{
-					if (playerDist > cloakerProperties.getVisibilityRange())
+					if (playerDist > getProperties().getVisibilityRange())
 					{
 						for (Block block : cloakedBlocks)
 						{
@@ -310,7 +238,7 @@ public class Cloaker extends MachineObject implements Machine
 	/**
 	 * Uncloaks all cloaked blocks
 	 */
-	public void Uncloak()
+	public void uncloak()
 	{
 		for (String string : cloakedClients.keySet())
 		{
@@ -341,7 +269,7 @@ public class Cloaker extends MachineObject implements Machine
 	/**
 	 * Initiates the designated cloaking
 	 */
-	public void InitiateCloaking()
+	public void initiateCloaking()
 	{
 		cloakedBlocks.clear();
 		
@@ -358,7 +286,7 @@ public class Cloaker extends MachineObject implements Machine
 			{
 				for (int z = 0; z < Math.max(1,  Math.abs(miningOffset.getZ()*2)); z++)
 				{
-					for (int depth = 1; depth <= cloakerProperties.getDepth(); depth++)
+					for (int depth = 1; depth <= getProperties().getDepth(); depth++)
 					{
 						cloakedBlocks.add(startingPos.getBlock().getLocation().add(getBlockOffset(x,y,z,facing)).getBlock().getRelative(facing, depth));
 					}
@@ -394,30 +322,30 @@ public class Cloaker extends MachineObject implements Machine
 		Vector miningOffset = new Vector(0, 0, 0);
 		
 		//Determines the Z or X offset
-		if (cloakerProperties.getWidth() > 1)
+		if (getProperties().getWidth() > 1)
 		{
 			if (facing.equals(BlockFace.NORTH))
 			{
-					miningOffset.setX(-(double)cloakerProperties.getWidth() / 2);
+					miningOffset.setX(-(double)getProperties().getWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.SOUTH))
 			{
-					miningOffset.setX((double)cloakerProperties.getWidth() / 2);
+					miningOffset.setX((double)getProperties().getWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.EAST))
 			{
-					miningOffset.setZ(-(double)cloakerProperties.getWidth() / 2);
+					miningOffset.setZ(-(double)getProperties().getWidth() / 2);
 			}
 			else if (facing.equals(BlockFace.WEST))
 			{
-					miningOffset.setZ((double)cloakerProperties.getWidth() / 2);
+					miningOffset.setZ((double)getProperties().getWidth() / 2);
 			}
 		}
 		
 		//Determines the Y offset
-		if (cloakerProperties.getHeight() > 1)
+		if (getProperties().getHeight() > 1)
 		{
-			miningOffset.setY(-(double)cloakerProperties.getHeight() / 2);
+			miningOffset.setY(-(double)getProperties().getHeight() / 2);
 		}
 		
 		return miningOffset;
@@ -437,7 +365,7 @@ public class Cloaker extends MachineObject implements Machine
 			byte data = machineLocation.getBlock().getData();
 			machineLocation.getBlock().setType(MachineFactoryPlugin.CLOAKER_ACTIVATED);
 			machineLocation.getBlock().setData(data);
-			InitiateCloaking();
+			initiateCloaking();
 			active = true;
 			CloakerSoundCollection.getPowerOnSound().playSound(machineLocation);
 		}
@@ -452,7 +380,7 @@ public class Cloaker extends MachineObject implements Machine
 		machineLocation.getBlock().setType(MachineFactoryPlugin.CLOAKER_DEACTIVATED);
 		machineLocation.getBlock().setData(data);
 		active = false;
-		Uncloak();
+		uncloak();
 		CloakerSoundCollection.getPowerOffSound().playSound(machineLocation);
 	}
 	
@@ -479,8 +407,8 @@ public class Cloaker extends MachineObject implements Machine
 			{
 				//PLAY SOUND
 				return new InteractionResponse(InteractionResult.FAILURE, 
-						"Missing fuel! " + getRequiredAvailableMaterials(cloakerProperties.getFuelAmount(),
-								cloakerProperties.getFuelType()));
+						"Missing fuel! " + getRequiredAvailableMaterials(getProperties().getFuelAmount(),
+								getProperties().getFuelMaterial()));
 			}
 		}
 	}
@@ -494,84 +422,40 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public void openInventory(Player player)
 	{
-		player.openInventory(cloakerInventory);
+		player.openInventory(machineInventory);
 	}
-	
+
 	/**
-	 * Attempts to remove a specific material of given amount from dispenser
+	 * Returns whether there is enough materials in chest above Cloaker to create
 	 */
-	public boolean removeMaterial(int amount, Material material)
+	public boolean createCloaker()
 	{
-		HashMap<Integer,? extends ItemStack> inventoryMaterials = cloakerInventory.all(material);
-		
-		int materialsToRemove = amount;
-		for(Entry<Integer,? extends ItemStack> entry : inventoryMaterials.entrySet())
+		Block blockAbove = machineLocation.getBlock().getRelative(BlockFace.UP);
+		if (blockAbove.getState() instanceof Chest)
 		{
-			if (materialsToRemove <= 0)
-				break;
+			Chest chestStorage = (Chest)blockAbove.getState();
+			Inventory chestInventory = chestStorage.getInventory();
+			Inventory tempStorage = machineInventory;
 			
-			if(entry.getValue().getAmount() == materialsToRemove)
+			machineInventory = chestInventory;
+			
+			if (upgradeMaterialAvailable(1))
 			{
-				cloakerInventory.setItem(entry.getKey(), new ItemStack(Material.AIR, 0));
-				materialsToRemove = 0;
-			}
-			else if(entry.getValue().getAmount() > materialsToRemove)
-			{
-				cloakerInventory.setItem(entry.getKey(), new ItemStack(material, (entry.getValue().getAmount() - materialsToRemove)));
-				materialsToRemove = 0;
+				removeUpgradeMaterial(1);
+				machineInventory = tempStorage;
+				return true;
 			}
 			else
 			{
-				int inStack = entry.getValue().getAmount();
-				cloakerInventory.setItem(entry.getKey(), new ItemStack(Material.AIR, 0));
-				materialsToRemove -= inStack;
+				return false;
 			}
 		}
-		
-		return materialsToRemove == 0;
-	}
-	
-	/**
-	 * Checks if a specific material of given amount is available in dispenser
-	 */
-	public boolean isMaterialAvailable(int amount, Material material)
-	{
-		HashMap<Integer,? extends ItemStack> inventoryMaterials = cloakerInventory.all(material);
-		
-		int totalMaterial = 0;
-		for(Entry<Integer,? extends ItemStack> entry : inventoryMaterials.entrySet())
+		else
 		{
-			totalMaterial += entry.getValue().getAmount();
+			return false;
 		}
-		
-		return (totalMaterial >= amount);
 	}
 	
-	/**
-	 * Returns the "Required: (X MATERIAL) Available: (Y MATERIAL)" message
-	 */
-	public String getRequiredAvailableMaterials(int amount, Material material)
-	{
-		return "Required: (" + amount + " " + material.toString() + ") Available: ("
-				+ getMaterialAvailableAmount(material) + " " + material.toString() + ")";
-	}
-	
-	/**
-     * Returns how much of a specified material is available in dispenser
-	 */
-	public int getMaterialAvailableAmount(Material material)
-	{
-		HashMap<Integer,? extends ItemStack> inventoryMaterials = cloakerInventory.all(material);
-		
-		int totalMaterial = 0;
-		for(Entry<Integer,? extends ItemStack> entry : inventoryMaterials.entrySet())
-		{
-			totalMaterial += entry.getValue().getAmount();
-		}
-		
-		return totalMaterial;
-	}
-
 	/*
 	 ----------CLOAKER PUBLIC ACCESSORS--------
 	 */
@@ -609,11 +493,11 @@ public class Cloaker extends MachineObject implements Machine
 	}
 	
 	/**
-	 * 'cloakerInventory' public accessor
+	 * Returns the properties for this machine
 	 */
-	public Inventory getInventory()
+	public CloakerProperties getProperties()
 	{
-		return cloakerInventory;
+		return (CloakerProperties)machineProperties;
 	}
 	
 	/*

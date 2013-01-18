@@ -1,5 +1,7 @@
 package com.github.MrTwiggy.MachineFactory.SoundCollections;
 
+import com.github.MrTwiggy.MachineFactory.Utility.Sound;
+
 /**
  * SmelterSoundCollection.java
  * Purpose: Holds all the Smelter sounds
@@ -9,5 +11,8 @@ package com.github.MrTwiggy.MachineFactory.SoundCollections;
  */
 public class SmelterSoundCollection
 {
-	//CREATE SOUNDS
+	public static Sound getUpgradeSound()
+	{
+		return null;
+	}
 }

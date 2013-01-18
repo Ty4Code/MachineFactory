@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.Machines.Cloaker;
 import com.github.MrTwiggy.MachineFactory.Managers.CloakerManager;
+import com.github.MrTwiggy.MachineFactory.Utility.CitadelInteraction;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 
 /**
@@ -39,7 +41,7 @@ public class CloakerListener implements Listener
 	/**
 	 * Event for creating/upgrading Cloakers and opening Cloaker Inventory.
 	 */
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void cloakerInteraction(PlayerInteractEvent event)
 	{
 		if (event.getClickedBlock() == null)
@@ -61,9 +63,13 @@ public class CloakerListener implements Listener
 				case RIGHT_CLICK_BLOCK:
 					if (cloakerMan.machineExistsAt(clicked.getLocation()))
 					{
-						Cloaker cloaker = (Cloaker)cloakerMan.getMachine(clicked.getLocation());
-						cloaker.openInventory(player);
-						event.setCancelled(true);
+						if (CitadelInteraction.isMemberOf(player.getName(), 
+								CitadelInteraction.getReinforcement(clicked)))
+						{
+							Cloaker cloaker = (Cloaker)cloakerMan.getMachine(clicked.getLocation());
+							cloaker.openInventory(player);
+							event.setCancelled(true);
+						}
 					}
 					break;
 				case LEFT_CLICK_BLOCK:
@@ -100,7 +106,7 @@ public class CloakerListener implements Listener
 	/**
 	 * Event for destroying a Cloaker
 	 */
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void cloakerBroken(BlockBreakEvent event)
 	{
 		Block destroyed = event.getBlock();
@@ -109,12 +115,15 @@ public class CloakerListener implements Listener
 		{
 			if (cloakerMan.machineExistsAt(destroyed.getLocation()))
 			{
-				Cloaker cloaker = (Cloaker)cloakerMan.getMachine(destroyed.getLocation());
-				
-				event.setCancelled(true);
-				ItemStack dropItem = new ItemStack(MachineFactoryPlugin.CLOAKER_DEACTIVATED, 1);
-				cloaker.destroy(dropItem);
-				cloakerMan.removeMachine(cloaker);
+				if (!event.isCancelled())
+				{
+					Cloaker cloaker = (Cloaker)cloakerMan.getMachine(destroyed.getLocation());
+					
+					event.setCancelled(true);
+					ItemStack dropItem = new ItemStack(MachineFactoryPlugin.CLOAKER_DEACTIVATED, 1);
+					cloaker.destroy(dropItem);
+					cloakerMan.removeMachine(cloaker);
+				}
 			}
 		}
 	}

@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.MrTwiggy.MachineFactory.MachineObject.MachineType;
+import com.github.MrTwiggy.MachineFactory.Interfaces.Properties;
 import com.github.MrTwiggy.MachineFactory.Managers.MachinesManager;
 import com.github.MrTwiggy.MachineFactory.Properties.CloakerProperties;
 import com.github.MrTwiggy.MachineFactory.Properties.OreGinProperties;
@@ -69,7 +71,7 @@ public class MachineFactoryPlugin extends JavaPlugin
 	public void onEnable()
 	{
 		getConfig().options().copyDefaults(true);
-		initializeOreGinProperties();
+		initializeConfigValues();
 		
 		if (properPluginsLoaded())
 		{
@@ -101,7 +103,7 @@ public class MachineFactoryPlugin extends JavaPlugin
 	 * Initializes the default OreGinProperties from config
 	 */
 	@SuppressWarnings("unchecked")
-	public void initializeOreGinProperties()
+	public void initializeConfigValues()
 	{
 		Ore_Gin_Properties = new HashMap<Integer,OreGinProperties>();
 		Cloaker_Properties = new HashMap<Integer,CloakerProperties>();
@@ -128,11 +130,11 @@ public class MachineFactoryPlugin extends JavaPlugin
 		MachineFactoryPlugin.LAVA_MINING_ENABLED = getConfig().getBoolean("oregin_general.lava_mining_enabled");
 		MachineFactoryPlugin.WATER_MINING_ENABLED = getConfig().getBoolean("oregin_general.water_mining_enabled");
 		MachineFactoryPlugin.JUNK_DESTRUCTION_ENABLED = getConfig().getBoolean("oregin_general.junk_destruction_enabled");
-		MachineFactoryPlugin.CLOAKER_CHUNK_RANGE = getConfig().getInt("cloaker_general.chunk_range");
 		MachineFactoryPlugin.CLOAKER_ACTIVATED = Material.valueOf(getConfig().getString("cloaker_general.cloaker_activated"));
 		MachineFactoryPlugin.CLOAKER_DEACTIVATED = Material.valueOf(getConfig().getString("cloaker_general.cloaker_deactivated"));
 		MachineFactoryPlugin.CLOAKER_UPGRADE_WAND = Material.valueOf(getConfig().getString("cloaker_general.cloaker_upgrade_wand"));
 		MachineFactoryPlugin.CLOAKER_ACTIVATION_WAND = Material.valueOf(getConfig().getString("cloaker_general.cloaker_activation_wand"));
+		MachineFactoryPlugin.CLOAKER_CHUNK_RANGE = getServer().getViewDistance();
 		
 		//Load valuables
 		List<String> valuablesMaterialStrings = (List<String>) getConfig().getList("oregin_general.valuables");
@@ -237,6 +239,39 @@ public class MachineFactoryPlugin extends JavaPlugin
 		return ( (getServer().getPluginManager().getPlugin(CITADEL_NAME) != null && MachineFactoryPlugin.CITADEL_ENABLED)
 				|| (getServer().getPluginManager().getPlugin(CITADEL_NAME) == null && !MachineFactoryPlugin.CITADEL_ENABLED));
 	}
+	
+	/**
+	 * Returns the properties for given machine type and tier level
+	 */
+	public static Properties getProperties(MachineType machineType, int tierLevel)
+	{
+		switch(machineType)
+		{
+		case OREGIN:
+			return MachineFactoryPlugin.Ore_Gin_Properties.get(tierLevel);
+		case CLOAKER:
+			return MachineFactoryPlugin.Cloaker_Properties.get(tierLevel);
+		default:
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns the max tiers for given machine type
+	 */
+	public static int getMaxTiers(MachineType machineType)
+	{
+		switch(machineType)
+		{
+		case OREGIN:
+			return MachineFactoryPlugin.MAX_OREGIN_TIERS;
+		case CLOAKER:
+			return MachineFactoryPlugin.MAX_CLOAKER_TIERS;
+		default:
+			return 1;
+		}
+	}
+	
 	
 	/*
 	 ----------SAVING/LOADING LOGIC--------

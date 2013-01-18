@@ -12,7 +12,7 @@ import com.github.MrTwiggy.MachineFactory.Utility.Sound;
  * @author MrTwiggy
  * @version 0.1 1/17/13
  */
-public class CloakerSoundCollection 
+public class CloakerSoundCollection
 {
 	/**
 	 * Power On Sound

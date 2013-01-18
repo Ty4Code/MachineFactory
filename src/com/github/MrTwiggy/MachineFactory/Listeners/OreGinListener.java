@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dispenser;
-import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,7 +30,6 @@ import org.bukkit.material.PistonBaseMaterial;
 
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.github.MrTwiggy.MachineFactory.Machines.OreGin;
-import com.github.MrTwiggy.MachineFactory.Machines.Smelter;
 import com.github.MrTwiggy.MachineFactory.Managers.OreGinManager;
 import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
@@ -65,11 +63,6 @@ public class OreGinListener implements Listener
 	{
 		Block clicked = event.getClickedBlock();
 		Player creator = event.getPlayer();
-	
-		if (clicked != null && (clicked.getState() instanceof Furnace))
-		{
-			creator.sendMessage("Verified: " + Smelter.verifySmelter(clicked.getLocation()));
-		}
 		
 		if (event.getAction().equals(Action.LEFT_CLICK_BLOCK))
 		{
