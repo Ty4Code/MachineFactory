@@ -274,7 +274,7 @@ public class MachineFactoryPlugin extends JavaPlugin
 	
 	
 	/*
-	 ----------SAVING/LOADING LOGIC--------
+	 ----------CONSOLE OUTPUT--------
 	 */
 	
 	/**

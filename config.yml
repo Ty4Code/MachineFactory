@@ -16,30 +16,30 @@ cloaker_general:
   cloaker_tier_properties:
     tier1:								# Tier 1 Cloaker Properties
       upgrade_type: IRON_BLOCK			# The material used to upgrade to this tier
-      upgrade_amount: 5					# The amount of upgrade_type items used to upgrade
-      fuel_time_duration: 30			# How long a cloak will last before having to refuel
+      upgrade_amount: 16				# The amount of upgrade_type items used to upgrade
+      fuel_time_duration: 900			# How long a cloak will last before having to refuel (IN SECONDS)
       fuel_type: REDSTONE				# The material used to fuel cloaking
-      fuel_amount: 10					# The amount of fuel_type items used to fuel
+      fuel_amount: 16					# The amount of fuel_type items used to fuel
       cloak_width: 3					# The width of the cloaking field (IN BLOCKS)
       cloak_height: 3					# The height of the cloaking field (IN BLOCKS)
       cloak_depth: 3					# The depth of the cloaking field (IN BLOCKS)
       visibility_range: 5				# How close a player must be to see the cloaked blocks (IN BLOCKS)
     tier2:								# Tier 2 Cloaker Properties
       upgrade_type: IRON_BLOCK
-      upgrade_amount: 64
-      fuel_time_duration: 30
-      fuel_type: REDSTONE
-      fuel_amount: 10
+      upgrade_amount: 92
+      fuel_time_duration: 1200
+      fuel_type: COAL
+      fuel_amount: 8
       cloak_width: 9
       cloak_height: 9
       cloak_depth: 9
       visibility_range: 13
     tier3:								# Tier 3 Cloaker Properties
       upgrade_type: GOLD_BLOCK
-      upgrade_amount: 32
-      fuel_time_duration: 600
+      upgrade_amount: 42
+      fuel_time_duration: 1800
       fuel_type: IRON_INGOT
-      fuel_amount: 3
+      fuel_amount: 12
       cloak_width: 21
       cloak_height: 21
       cloak_depth: 21
