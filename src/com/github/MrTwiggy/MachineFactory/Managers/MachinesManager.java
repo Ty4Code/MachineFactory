@@ -11,6 +11,10 @@ import org.bukkit.Location;
 import org.bukkit.event.Listener;
 
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
+import com.github.MrTwiggy.MachineFactory.MachineObject.MachineType;
+import com.github.MrTwiggy.MachineFactory.SoundCollections.CloakerSoundCollection;
+import com.github.MrTwiggy.MachineFactory.SoundCollections.OreGinSoundCollection;
+import com.github.MrTwiggy.MachineFactory.Interfaces.Machine;
 import com.github.MrTwiggy.MachineFactory.Interfaces.Manager;
 import com.github.MrTwiggy.MachineFactory.Listeners.CloakerListener;
 import com.github.MrTwiggy.MachineFactory.Listeners.OreGinListener;
@@ -140,6 +144,9 @@ public class MachinesManager
 		}
 	}
 	
+	/**
+	 * Returns the appropriate manager depending on the given Manager Type
+	 */
 	@SuppressWarnings("rawtypes")
 	public Manager getManager(Class managerType)
 	{
@@ -152,6 +159,84 @@ public class MachinesManager
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Plays the Upgrade sound at given location depending on the machine
+	 * TEMPORARY SOLUTION~~~
+	 */
+	public void playUpgradeSound(Location machineLocation, MachineType machineType)
+	{
+		Manager manager;
+		switch(machineType)
+		{
+		case OREGIN:
+			manager = getManager(OreGinManager.class);
+			break;
+		case CLOAKER:
+			manager = getManager(CloakerManager.class);
+			break;
+		default:
+			manager = null;
+			break;
+		}
+		
+		if (manager != null)
+		{
+			Machine machine = manager.getMachine(machineLocation);
+			
+			if (machine != null)
+			{
+				switch(machineType)
+				{
+				case OREGIN:
+					OreGinSoundCollection.getUpgradeSound().playSound(machineLocation);
+					break;
+				case CLOAKER:
+					CloakerSoundCollection.getUpgradeSound().playSound(machineLocation);
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Plays the Error sound at given location depending on the machine
+	 * TEMPORARY SOLUTION~~~
+	 */
+	public void playErrorSound(Location machineLocation, MachineType machineType)
+	{
+		Manager manager;
+		switch(machineType)
+		{
+		case OREGIN:
+			manager = getManager(OreGinManager.class);
+			break;
+		case CLOAKER:
+			manager = getManager(CloakerManager.class);
+			break;
+		default:
+			manager = null;
+			break;
+		}
+		
+		if (manager != null)
+		{
+			Machine machine = manager.getMachine(machineLocation);
+			
+			if (machine != null)
+			{
+				switch(machineType)
+				{
+				case OREGIN:
+					OreGinSoundCollection.getErrorSound().playSound(machineLocation);
+					break;
+				case CLOAKER:
+					CloakerSoundCollection.getErrorSound().playSound(machineLocation);
+					break;
+				}
+			}
+		}
 	}
 	
 	/**

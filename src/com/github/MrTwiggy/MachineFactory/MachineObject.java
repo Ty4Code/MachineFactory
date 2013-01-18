@@ -11,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.MrTwiggy.MachineFactory.Interfaces.Properties;
+import com.github.MrTwiggy.MachineFactory.Managers.MachinesManager;
 import com.github.MrTwiggy.MachineFactory.Utility.Dimensions;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.InteractionResult;
@@ -148,17 +149,14 @@ public class MachineObject
 				removeUpgradeMaterial(desiredTier);
 				tierLevel++;
 				updateProperties();
-				//CloakerSoundCollection.getUpgradeSound().playSound(machineLocation);
-				//MachineFactoryPlugin.getSoundCollection(machineType).getUpgradeSound().playSound(machineLocation);
-				//PLAY UPGRADE SOUND SOMEHOW
+				MachinesManager.machineMan.playUpgradeSound(machineLocation, machineType);
 				upgraded = true;
 				return new InteractionResponse(InteractionResult.SUCCESS,
 						machineName() + " successfully upgraded to tier " + tierLevel + "!!");
 			}
 			else
 			{
-				//CloakerSoundCollection.getErrorSound().playSound(machineLocation);
-				//PLAY ERROR SOUDN SOMEHOW
+				MachinesManager.machineMan.playErrorSound(machineLocation, machineType);
 				return new InteractionResponse(InteractionResult.FAILURE,
 						 "Missing upgrade materials! " 
 								 + getRequiredAvailableMaterials(desiredTierProperties.getUpgradeAmount(),
@@ -167,8 +165,7 @@ public class MachineObject
 		}
 		else
 		{
-			//CloakerSoundCollection.getErrorSound().playSound(machineLocation);
-			//PLAY ERROR SOUND HERE SOMEHOW
+			MachinesManager.machineMan.playUpgradeSound(machineLocation, machineType);
 			return new InteractionResponse(InteractionResult.FAILURE,
 					machineName() + " is already max tier level!");
 		}
