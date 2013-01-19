@@ -19,7 +19,7 @@ cloaker_general:
       upgrade_amount: 16
       fuel_time_duration: 900
       fuel_type: REDSTONE
-      fuel_amount: 16
+      fuel_amount: 8
       cloak_width: 3
       cloak_height: 3
       cloak_depth: 3
@@ -29,7 +29,7 @@ cloaker_general:
       upgrade_amount: 92
       fuel_time_duration: 1200
       fuel_type: COAL
-      fuel_amount: 8
+      fuel_amount: 4
       cloak_width: 9
       cloak_height: 9
       cloak_depth: 9
@@ -39,7 +39,7 @@ cloaker_general:
       upgrade_amount: 42
       fuel_time_duration: 1800
       fuel_type: IRON_INGOT
-      fuel_amount: 12
+      fuel_amount: 5
       cloak_width: 16
       cloak_height: 16
       cloak_depth: 16
