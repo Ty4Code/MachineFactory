@@ -392,6 +392,7 @@ public class Cloaker extends MachineObject implements Machine
 		if (active)
 		{
 			powerOff();
+			CloakerSoundCollection.getPowerOffSound().playSound(machineLocation);
 			return new InteractionResponse(InteractionResult.FAILURE,
 					"Cloaker has been deactivated!");
 		}
@@ -400,12 +401,13 @@ public class Cloaker extends MachineObject implements Machine
 			if (fuelAvailable())
 			{
 				powerOn();
+				CloakerSoundCollection.getPowerOnSound().playSound(machineLocation);
 				return new InteractionResponse(InteractionResult.SUCCESS,
 						"Cloaker has been activated!");
 			}
 			else
 			{
-				//PLAY SOUND
+				CloakerSoundCollection.getErrorSound().playSound(machineLocation);
 				return new InteractionResponse(InteractionResult.FAILURE, 
 						"Missing fuel! " + getRequiredAvailableMaterials(getProperties().getFuelAmount(),
 								getProperties().getFuelMaterial()));
