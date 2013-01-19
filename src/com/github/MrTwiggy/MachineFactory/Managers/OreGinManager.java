@@ -110,8 +110,11 @@ public class OreGinManager implements Manager
 			boolean mining = Boolean.parseBoolean(parts[7]);
 			boolean broken = Boolean.parseBoolean(parts[8]);
 			
-			OreGin oreGin = new OreGin(blockBreaks, tierLevel, mining, broken, miningDistance, oreGinLocation, this);
-			addMachine(oreGin);
+			if (oreGinLocation.getBlock().getType().equals(Material.DISPENSER))
+			{
+				OreGin oreGin = new OreGin(blockBreaks, tierLevel, mining, broken, miningDistance, oreGinLocation, this);
+				addMachine(oreGin);
+			}
 		}
 
 		MachineFactoryPlugin.sendConsoleMessage("Successfully loaded " + oreGins.size() + " Ore Gins!");

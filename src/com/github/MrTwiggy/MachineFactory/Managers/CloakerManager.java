@@ -106,9 +106,13 @@ public class CloakerManager implements Manager
 			boolean active = Boolean.parseBoolean(parts[5]);
 			double cloaked_duration = Double.parseDouble(parts[6]);
 			Inventory cloaker_inventory = InventoryStringDeSerializer.StringToInventory(parts[7]);
-			Cloaker cloaker = new Cloaker(tierLevel, active, cloaked_duration, cloaker_inventory,
-					cloakerLocation);
-			addMachine(cloaker);
+			
+			if (Cloaker.isCloakerType(cloakerLocation.getBlock().getType()))
+			{
+				Cloaker cloaker = new Cloaker(tierLevel, active, cloaked_duration, cloaker_inventory,
+						cloakerLocation);
+				addMachine(cloaker);
+			}
 		}
 
 		MachineFactoryPlugin.sendConsoleMessage("Successfully loaded " + cloakers.size() + " Cloakers!");
