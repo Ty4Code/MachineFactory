@@ -56,6 +56,7 @@ public class Cloaker extends MachineObject implements Machine
 		cloakedClients = new HashMap<String, Boolean>();
 		cloakedDuration = 0;
 		initiateCloaking();
+		CloakerSoundCollection.getCreationSound().playSound(machineLocation);
 	}
 	
 	/**

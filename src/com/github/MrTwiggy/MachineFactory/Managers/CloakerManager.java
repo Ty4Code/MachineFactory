@@ -143,7 +143,6 @@ public class CloakerManager implements Manager
 		if (cloaker.createCloaker())
 		{
 			cloakers.add(cloaker);
-			CloakerSoundCollection.getCreationSound().playSound(machineLocation);
 			return new InteractionResponse(InteractionResult.SUCCESS,
 					"Successfully created Cloaker!");
 		}
