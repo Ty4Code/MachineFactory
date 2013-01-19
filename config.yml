@@ -40,9 +40,9 @@ cloaker_general:
       fuel_time_duration: 1800
       fuel_type: IRON_INGOT
       fuel_amount: 12
-      cloak_width: 21
-      cloak_height: 21
-      cloak_depth: 21
+      cloak_width: 16
+      cloak_height: 16
+      cloak_depth: 16
       visibility_range: 25
   
 oregin_general:
