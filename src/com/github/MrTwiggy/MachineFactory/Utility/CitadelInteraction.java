@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin;
 import com.untamedears.citadel.Utility;
 import com.untamedears.citadel.entity.IReinforcement;
+import com.untamedears.citadel.entity.NaturalReinforcement;
 import com.untamedears.citadel.entity.PlayerReinforcement;
 
 /**
@@ -22,7 +23,8 @@ public class CitadelInteraction
 	 */
 	public static boolean blockReinforced(Block block)
 	{
-		return MachineFactoryPlugin.CITADEL_ENABLED && Utility.isReinforced(block);
+		return MachineFactoryPlugin.CITADEL_ENABLED && Utility.isReinforced(block) 
+				&& !(getReinforcement(block) instanceof NaturalReinforcement);
 	}
 	
 	/**
@@ -85,6 +87,31 @@ public class CitadelInteraction
 		else
 		{
 			return false;
+		}
+	}
+
+	/**
+	 * Removes the reinforcement on the given block, if one exists.
+	 */
+	public static boolean breakBlock(Block block)
+	{		
+		if (MachineFactoryPlugin.CITADEL_ENABLED && getReinforcement(block) != null)
+		{
+			IReinforcement reinforcement = getReinforcement(block);
+			if (reinforcement instanceof NaturalReinforcement)
+			{
+				Utility.reinforcementDamaged(reinforcement);
+				
+				return (getReinforcement(block) == null);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
 		}
 	}
 }

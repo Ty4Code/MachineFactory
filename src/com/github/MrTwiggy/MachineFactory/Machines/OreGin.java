@@ -320,7 +320,11 @@ public class OreGin extends MachineObject implements Machine
 	{
 		Material blockType = block.getType();
 		
-		if (MachinesManager.machineMan.macineExistsAt(block.getLocation()))
+		if (blockType.equals(Material.AIR))
+		{
+			return false;
+		}
+		else if (MachinesManager.machineMan.macineExistsAt(block.getLocation()))
 		{
 			return false;
 		}
@@ -341,27 +345,36 @@ public class OreGin extends MachineObject implements Machine
 			{
 				if (getProperties().getRetrieveValuables() && MachineFactoryPlugin.VALUABLES.contains(blockType))
 				{
-					Collection<ItemStack> drops = block.getDrops();
-						
-					for (ItemStack item : drops)
+					if (CitadelInteraction.breakBlock(block))
 					{
-						HashMap<Integer,ItemStack> leftOvers = addMaterial(item);
+						Collection<ItemStack> drops = block.getDrops();
 						
-						for (Entry<Integer,ItemStack> entry : leftOvers.entrySet())
+						for (ItemStack item : drops)
 						{
-							block.getWorld().dropItemNaturally(this.machineLocation, entry.getValue());
+							HashMap<Integer,ItemStack> leftOvers = addMaterial(item);
+							
+							for (Entry<Integer,ItemStack> entry : leftOvers.entrySet())
+							{
+								block.getWorld().dropItemNaturally(this.machineLocation, entry.getValue());
+							}
 						}
+
+						block.setType(Material.AIR);
 					}
-					
-					block.setType(Material.AIR);
 				}
 				else if (MachineFactoryPlugin.JUNK_DESTRUCTION_ENABLED && MachineFactoryPlugin.JUNK.contains(blockType))
 				{
-					block.setType(Material.AIR);
+					if (CitadelInteraction.breakBlock(block))
+					{
+						block.setType(Material.AIR);
+					}
 				}
 				else 
 				{
-					block.breakNaturally();
+					if (CitadelInteraction.breakBlock(block))
+					{
+						block.breakNaturally();
+					}
 				}
 				return true;
 			}
