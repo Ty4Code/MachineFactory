@@ -77,7 +77,10 @@ public class CitadelInteraction
 		{
 			PlayerReinforcement playerReinforcement = (PlayerReinforcement)reinforcement;
 			
-			return playerReinforcement.getOwner().isMember(playerName);
+			boolean isMember = playerReinforcement.getOwner().isMember(playerName);
+			boolean isModerator = playerReinforcement.getOwner().isModerator(playerName);
+			boolean isFounder = playerReinforcement.getOwner().isFounder(playerName);
+			return (isMember || isModerator || isFounder);
 		}
 		else
 		{
