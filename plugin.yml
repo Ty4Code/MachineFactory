@@ -1,5 +1,5 @@
 name: MachineFactory
 main: com.github.MrTwiggy.MachineFactory.MachineFactoryPlugin
 author: MrTwiggy
-version: 0.1
+version: 1.0
 softdepend: [Citadel]

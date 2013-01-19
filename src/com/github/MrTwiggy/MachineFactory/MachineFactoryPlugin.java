@@ -27,7 +27,7 @@ public class MachineFactoryPlugin extends JavaPlugin
 	public static HashMap<Integer,OreGinProperties> Ore_Gin_Properties; //Map of properties for all OreGin tiers
 	public static HashMap<Integer,CloakerProperties> Cloaker_Properties; //Map of properties for all Cloaker tiers
 	
-	public static final String VERSION = "v0.1"; //Current version of plugin
+	public static final String VERSION = "v1.0"; //Current version of plugin
 	public static final String PLUGIN_NAME = "MachineFactory"; //Name of plugin
 	public static final String PLUGIN_PREFIX = PLUGIN_NAME + " " + VERSION + ": "; //The prefix used for console outputs
 	public static final String ORE_GIN_SAVES_FILE = "OreGinSaves"; // The ore gin saves file name
