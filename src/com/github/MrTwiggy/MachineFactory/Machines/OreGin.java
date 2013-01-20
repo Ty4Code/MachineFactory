@@ -95,6 +95,7 @@ public class OreGin extends MachineObject implements Machine
 		this.oreGinMan = oreGinMan;
 		OreGinSoundCollection.getPlacementSound().playSound(oreGinLocation);
 		blockPower = oreGinLocation.getBlock().getBlockPower();
+		checkBroken();
 	}
 	
 	/*
@@ -263,7 +264,7 @@ public class OreGin extends MachineObject implements Machine
 	 */
 	public void mineForward()
 	{
-		if (miningDistance < getProperties().getMaxMiningDistance())
+		if (!checkBroken())
 		{
 			if (blockBreaks < getProperties().getMaxBlockBreaks())
 			{
@@ -299,11 +300,7 @@ public class OreGin extends MachineObject implements Machine
 					miningDistance++;
 					OreGinSoundCollection.getMiningSound().playSound(machineLocation);
 				}
-			}
-			else
-			{
-				breakOreGin();
-			}		
+			}	
 		}
 		else
 		{
@@ -341,7 +338,6 @@ public class OreGin extends MachineObject implements Machine
 			}
 			else if (CitadelInteraction.reinforcementIsNatural(block))
 			{ // If the block reinforcement is Natural
-				MachineFactoryPlugin.sendConsoleMessage("Natural");
 				if (CitadelInteraction.damageReinforcement(block))
 				{
 					destroyBlock(block);
@@ -580,6 +576,20 @@ public class OreGin extends MachineObject implements Machine
 		return removeMaterial(getProperties().getRepairAmount(), getProperties().getRepairMaterial(), this.machineLocation);
 	}
 		
+	/**
+	 * Checks to see if OreGin should be broken and then breaks it if it should be
+	 */
+	public boolean checkBroken()
+	{
+		if (miningDistance >= getProperties().getMaxMiningDistance())
+		{
+			breakOreGin();
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/*
 	 ----------FUEL LOGIC--------
 	 */
