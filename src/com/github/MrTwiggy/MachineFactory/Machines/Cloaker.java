@@ -41,6 +41,7 @@ public class Cloaker extends MachineObject implements Machine
 	public static final MachineType MACHINE_TYPE = MachineType.CLOAKER; // The type this machine is
 
 	private double cloakedDuration; // The duration of the current cloaking
+	private Material cloakingMaterial; // The material used to cloak blocks with
 	
 	/*
 	 ----------CLOAKER CONSTRUCTORS--------
@@ -187,6 +188,7 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public void cloakBlocks()
 	{		
+		updateCloakingMaterial();
 		for (Player player : machineLocation.getWorld().getPlayers())
 		{
 			int chunkXDiff = Math.abs(player.getLocation().getChunk().getX() 
@@ -221,7 +223,7 @@ public class Cloaker extends MachineObject implements Machine
 					{
 						for (Block block : cloakedBlocks)
 						{
-							player.sendBlockChange(block.getLocation(), Material.AIR, (byte)0);
+							player.sendBlockChange(block.getLocation(), cloakingMaterial, (byte)0);
 						}
 						cloakedClients.put(player.getName(), false);
 					}
@@ -350,6 +352,23 @@ public class Cloaker extends MachineObject implements Machine
 		}
 		
 		return miningOffset;
+	}
+	
+	/**
+	 * Updates the material used for cloaking
+	 */
+	public void updateCloakingMaterial()
+	{
+		ItemStack cloakingItem = machineInventory.getItem(26);
+		
+		if (cloakingItem != null)
+		{
+			cloakingMaterial = cloakingItem.getType();
+		}
+		else
+		{
+			cloakingMaterial = Material.AIR;
+		}
 	}
 	
 	/*
