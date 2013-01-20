@@ -35,8 +35,8 @@ import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse.Interactio
  */
 public class Cloaker extends MachineObject implements Machine
 {
-	List<Block> cloakedBlocks; // List of blocks in the cloaking field
-	Map<String, Boolean> cloakedClients; // List of clients within cloaking chunk range
+	private List<Block> cloakedBlocks; // List of blocks in the cloaking field
+	private Map<String, Boolean> cloakedClients; // List of clients within cloaking chunk range
 	
 	public static final MachineType MACHINE_TYPE = MachineType.CLOAKER; // The type this machine is
 
@@ -361,7 +361,7 @@ public class Cloaker extends MachineObject implements Machine
 	{
 		ItemStack cloakingItem = machineInventory.getItem(26);
 		
-		if (cloakingItem != null)
+		if (cloakingItem != null && cloakingItem.getType().isBlock() && !cloakingItem.getType().equals(Material.CHEST))
 		{
 			cloakingMaterial = cloakingItem.getType();
 		}
