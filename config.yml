@@ -98,8 +98,8 @@ oregin_general:
       upgrade_amount: 20
       repair_material: IRON_BLOCK
       repair_amount: 8
-      shaft_width: 3
-      shaft_height: 1   
+      shaft_width: 1
+      shaft_height: 3   
     tier3:
       max_mining_distance: 50
       max_block_breaks: 1000
