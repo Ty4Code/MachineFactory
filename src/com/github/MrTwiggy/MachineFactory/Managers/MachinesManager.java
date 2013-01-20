@@ -195,6 +195,8 @@ public class MachinesManager
 				case CLOAKER:
 					CloakerSoundCollection.getUpgradeSound().playSound(machineLocation);
 					break;
+				case SMELTER:
+					break;
 				}
 			}
 		}
@@ -233,6 +235,8 @@ public class MachinesManager
 					break;
 				case CLOAKER:
 					CloakerSoundCollection.getErrorSound().playSound(machineLocation);
+					break;
+				case SMELTER:
 					break;
 				}
 			}
@@ -326,7 +330,7 @@ public class MachinesManager
 	/**
 	 * Returns whether a machine exists at given location in any manager
 	 */
-	public boolean macineExistsAt(Location location)
+	public boolean machineExistsAt(Location location)
 	{
 		for (Manager manager : managers)
 		{

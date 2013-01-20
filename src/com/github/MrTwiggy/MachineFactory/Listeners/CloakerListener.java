@@ -17,6 +17,7 @@ import com.github.MrTwiggy.MachineFactory.Machines.Cloaker;
 import com.github.MrTwiggy.MachineFactory.Managers.CloakerManager;
 import com.github.MrTwiggy.MachineFactory.Utility.CitadelInteraction;
 import com.github.MrTwiggy.MachineFactory.Utility.InteractionResponse;
+import com.untamedears.citadel.Utility;
 
 /**
  * CloakerListener.java
@@ -54,6 +55,9 @@ public class CloakerListener implements Listener
 		Player player = event.getPlayer();
 		Action action = event.getAction();
 		Material inHand = player.getItemInHand().getType();
+		
+		if (inHand.equals(Material.ANVIL))
+			Utility.createNaturalReinforcement(clicked);
 		
 		if (type.equals(MachineFactoryPlugin.CLOAKER_ACTIVATED) 
 				|| type.equals(MachineFactoryPlugin.CLOAKER_DEACTIVATED))

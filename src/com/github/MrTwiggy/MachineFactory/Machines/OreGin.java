@@ -279,17 +279,16 @@ public class OreGin extends MachineObject implements Machine
 					for (int y = 0; y < Math.max(1,  Math.abs(miningOffset.getY()*2)); y++)
 					{
 						for (int z = 0; z < Math.max(1,  Math.abs(miningOffset.getZ()*2)); z++)
-						{
-							if (!active)
-							{
-								removeFuel();
-								return;
-							}
-							
+						{	
 							if (mineBlock(startingPos.getBlock().getLocation().add(getBlockOffset(x,y,z)).getBlock().getRelative(facing, miningDistance + 1)))
 							{
 								blockBreaks++;
 								oreGinMan.incrementBlockBreaksDuringCycle();
+							}
+							if (!active)
+							{
+								removeFuel();
+								return;
 							}
 						}
 					}
@@ -320,68 +319,80 @@ public class OreGin extends MachineObject implements Machine
 	{
 		Material blockType = block.getType();
 		
-		if (blockType.equals(Material.AIR))
-		{
-			return false;
-		}
-		else if (MachinesManager.machineMan.macineExistsAt(block.getLocation()))
-		{
-			return false;
-		}
-		else if ( (blockType.equals(Material.WATER) && !MachineFactoryPlugin.WATER_MINING_ENABLED) 
-			   || (blockType.equals(Material.LAVA) && !MachineFactoryPlugin.LAVA_MINING_ENABLED) )
-		{
-			return false;
-		}
-		else if (MachineFactoryPlugin.INDESTRUCTIBLE.contains(blockType))
+		if (blockType.equals(Material.AIR)
+			|| MachinesManager.machineMan.machineExistsAt(block.getLocation())
+			|| (blockType.equals(Material.WATER) && !MachineFactoryPlugin.WATER_MINING_ENABLED) 
+			|| (blockType.equals(Material.LAVA) && !MachineFactoryPlugin.LAVA_MINING_ENABLED) 
+			|| MachineFactoryPlugin.INDESTRUCTIBLE.contains(blockType))
 		{
 			return false;
 		}
 		else
 		{
-			Block oreGinBlock = machineLocation.getBlock(); //If the reinforcements match
-			if (CitadelInteraction.blockReinforced(block) && CitadelInteraction.reinforcementsMatch(block, oreGinBlock)
-					|| !CitadelInteraction.blockReinforced(block))
-			{
-				if (getProperties().getRetrieveValuables() && MachineFactoryPlugin.VALUABLES.contains(blockType))
+			Block oreGinBlock = machineLocation.getBlock();
+			
+			if (!CitadelInteraction.blockReinforced(block) 
+					|| CitadelInteraction.reinforcementsMatch(block, oreGinBlock))
+			{ //If block isn't reinforced or OreGin shares the reinforcement with block being mined
+				CitadelInteraction.breakBlock(block);
+				destroyBlock(block);
+				
+				return true;
+			}
+			else if (CitadelInteraction.reinforcementIsNatural(block))
+			{ // If the block reinforcement is Natural
+				MachineFactoryPlugin.sendConsoleMessage("Natural");
+				if (CitadelInteraction.damageReinforcement(block))
 				{
-					if (CitadelInteraction.breakBlock(block))
-					{
-						Collection<ItemStack> drops = block.getDrops();
-						
-						for (ItemStack item : drops)
-						{
-							HashMap<Integer,ItemStack> leftOvers = addMaterial(item);
-							
-							for (Entry<Integer,ItemStack> entry : leftOvers.entrySet())
-							{
-								block.getWorld().dropItemNaturally(this.machineLocation, entry.getValue());
-							}
-						}
-
-						block.setType(Material.AIR);
-					}
+					destroyBlock(block);
 				}
-				else if (MachineFactoryPlugin.JUNK_DESTRUCTION_ENABLED && MachineFactoryPlugin.JUNK.contains(blockType))
-				{
-					if (CitadelInteraction.breakBlock(block))
-					{
-						block.setType(Material.AIR);
-					}
-				}
-				else 
-				{
-					if (CitadelInteraction.breakBlock(block))
-					{
-						block.breakNaturally();
-					}
-				}
+				
 				return true;
 			}
 			else
-			{
+			{ // The block and OreGin don't share the same reinforcement
 				powerOff();
 				return false;
+			}
+		}
+	}
+	
+	/**
+	 * Destroys the block in the appropriate manner depending on type and properties
+	 */
+	public void destroyBlock(Block block)
+	{
+		Material blockType = block.getType();
+		
+		if (getProperties().getRetrieveValuables() && MachineFactoryPlugin.VALUABLES.contains(blockType))
+		{
+			retrieveValuables(block);
+			block.setType(Material.AIR);
+		}
+		else if (MachineFactoryPlugin.JUNK_DESTRUCTION_ENABLED && MachineFactoryPlugin.JUNK.contains(blockType))
+		{
+			block.setType(Material.AIR);
+		}
+		else
+		{
+			block.breakNaturally();
+		}
+	}
+	
+	/**
+	 * Retrieves the valuables of a block and attempts to place them in the dispenser inventory
+	 */
+	public void retrieveValuables(Block block)
+	{
+		Collection<ItemStack> drops = block.getDrops();
+		
+		for (ItemStack item : drops)
+		{
+			HashMap<Integer,ItemStack> leftOvers = addMaterial(item);
+			
+			for (Entry<Integer,ItemStack> entry : leftOvers.entrySet())
+			{
+				block.getWorld().dropItemNaturally(this.machineLocation, entry.getValue());
 			}
 		}
 	}

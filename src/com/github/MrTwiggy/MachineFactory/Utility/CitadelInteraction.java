@@ -23,8 +23,7 @@ public class CitadelInteraction
 	 */
 	public static boolean blockReinforced(Block block)
 	{
-		return MachineFactoryPlugin.CITADEL_ENABLED && Utility.isReinforced(block) 
-				&& !(getReinforcement(block) instanceof NaturalReinforcement);
+		return MachineFactoryPlugin.CITADEL_ENABLED && Utility.isReinforced(block);
 	}
 	
 	/**
@@ -56,7 +55,7 @@ public class CitadelInteraction
 			{
 				String ownerName2 = ((PlayerReinforcement)block2Reinforcement).getOwner().getName();
 				
-				return (ownerName1 == ownerName2); 
+				return (ownerName1.equalsIgnoreCase(ownerName2)); 
 			}
 			else
 			{
@@ -93,25 +92,33 @@ public class CitadelInteraction
 	/**
 	 * Removes the reinforcement on the given block, if one exists.
 	 */
-	public static boolean breakBlock(Block block)
+	public static void breakBlock(Block block)
 	{		
-		if (MachineFactoryPlugin.CITADEL_ENABLED && getReinforcement(block) != null)
+		if (MachineFactoryPlugin.CITADEL_ENABLED && Utility.isReinforced(block))
 		{
 			IReinforcement reinforcement = getReinforcement(block);
-			if (reinforcement instanceof NaturalReinforcement)
-			{
-				Utility.reinforcementDamaged(reinforcement);
-				
-				return (getReinforcement(block) == null);
-			}
-			else
-			{
-				return false;
-			}
+			Utility.removeReinforcement(reinforcement);
 		}
-		else
-		{
-			return true;
-		}
+	}
+	
+	/**
+	 * Damages the reinforcement and returns if the reinforcement was broken
+	 */
+	public static boolean damageReinforcement(Block block)
+	{
+		Utility.reinforcementDamaged(getReinforcement(block));
+		
+		return (getReinforcement(block) == null);
+	}
+
+	/**
+	 * Returns whether the block given has a Natural reinforcement
+	 */
+	public static boolean reinforcementIsNatural(Block block)
+	{
+		IReinforcement reinforcement = Utility.getReinforcement(block);
+		
+		return (reinforcement != null
+				&& reinforcement instanceof NaturalReinforcement);
 	}
 }
