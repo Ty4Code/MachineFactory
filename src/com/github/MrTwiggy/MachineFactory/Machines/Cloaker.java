@@ -40,6 +40,8 @@ public class Cloaker extends MachineObject implements Machine
 	
 	public static final MachineType MACHINE_TYPE = MachineType.CLOAKER; // The type this machine is
 
+	private int forceCloakTimer; // The timer used for forcing cloak updates
+	private boolean forceCloak; // Whether a cloak should be forced on all players
 	private double cloakedDuration; // The duration of the current cloaking
 	private Material cloakingMaterial; // The material used to cloak blocks with
 	
@@ -56,6 +58,8 @@ public class Cloaker extends MachineObject implements Machine
 		cloakedBlocks = new ArrayList<Block>();
 		cloakedClients = new HashMap<String, Boolean>();
 		cloakedDuration = 0;
+		forceCloakTimer = 0;
+		forceCloak = false;
 		initiateCloaking();
 		CloakerSoundCollection.getCreationSound().playSound(machineLocation);
 	}
@@ -70,6 +74,8 @@ public class Cloaker extends MachineObject implements Machine
 		cloakedClients = new HashMap<String, Boolean>();
 		cloakedDuration = 0;
 		initiateCloaking();
+		forceCloak = false;
+		forceCloakTimer = 0;
 		CloakerSoundCollection.getPlacementSound().playSound(machineLocation);
 	}
 	
@@ -84,6 +90,8 @@ public class Cloaker extends MachineObject implements Machine
 		cloakedBlocks = new ArrayList<Block>();
 		cloakedClients = new HashMap<String, Boolean>();
 		this.cloakedDuration = cloakedDuration;
+		forceCloakTimer = 0;
+		forceCloak = false;
 		initiateCloaking();
 	}
 	
@@ -104,6 +112,10 @@ public class Cloaker extends MachineObject implements Machine
 		
 		if (active) //If cloaking
 		{
+			forceCloakTimer++;
+			
+			forceCloak = (forceCloakTimer >= 10);
+			
 			cloakBlocks();
 			
 			cloakedDuration += (MachineFactoryPlugin.CLOAKER_UPDATE_CYCLE / MachineFactoryPlugin.TICKS_PER_SECOND);
@@ -120,6 +132,12 @@ public class Cloaker extends MachineObject implements Machine
 					powerOff();
 				}
 			}
+			
+			if (forceCloak)
+			{
+				forceCloak = false;
+				forceCloakTimer = 0;
+			}
 		}
 		else // If not cloaking
 		{
@@ -132,6 +150,7 @@ public class Cloaker extends MachineObject implements Machine
 	 */
 	public void destroy(ItemStack item) 
 	{
+		powerOff();
 		setItemMeta(item);
 		machineLocation.getWorld().dropItemNaturally(machineLocation, item);
 		machineLocation.getBlock().setType(Material.AIR);
@@ -219,7 +238,7 @@ public class Cloaker extends MachineObject implements Machine
 				}
 				else // If not cloaked
 				{
-					if (playerDist > getProperties().getVisibilityRange())
+					if (forceCloak || playerDist > getProperties().getVisibilityRange())
 					{
 						for (Block block : cloakedBlocks)
 						{
@@ -261,8 +280,6 @@ public class Cloaker extends MachineObject implements Machine
 					{
 						player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
 					}
-					player.sendBlockChange(machineLocation, machineLocation.getBlock().getType(), 
-							machineLocation.getBlock().getData());
 				}
 			}
 		}
